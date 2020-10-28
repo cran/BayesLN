@@ -4,11 +4,13 @@
 \name{NCBC}
 \alias{NCBC}
 \title{Naval Construction Battalion Center data}
-\format{Dataframe with 2 variables:
+\format{
+Dataframe with 2 variables:
 
 \code{al}: aluminium concentration measures.
 
-\code{mn}: manganese concentration measures.}
+\code{mn}: manganese concentration measures.
+}
 \source{
 Singh, Ashok K., Anita Singh, and Max Engelhardt. \emph{The lognormal distribution
 in environmental applications.} Technology Support Center Issue Paper. (1997).

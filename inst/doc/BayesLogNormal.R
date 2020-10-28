@@ -47,7 +47,7 @@ data_pred_new <- expand.grid(so=c(-1,1), subj=factor(12), item=factor(8))
 Mod_est_RT <- LN_hierarchical(formula_lme = log_rt ~ so +(1|subj)+(1|item), 
                               data_lme = ReadingTime, data_pred = data_pred_new, 
                               functional = c("Marginal", "Subject"), 
-                              nsamp = 5000, burnin = 2000)
+                              nsamp = 25000, burnin = 5000, n_thin = 5)
 
 ## -----------------------------------------------------------------------------
 # Prior parameters

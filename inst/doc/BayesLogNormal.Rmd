@@ -27,7 +27,7 @@ If Bayes estimator under the quadratic loss function are to be considered (i.e.,
 
 When an improper prior is fixed, a lot of care is usually taken in the properness of the posterior distribution. Even if the distribution is proper, it is not guaranteed that its moments are finite. This is the case with the Bayes estimators of log-normal functionals when the analysis is based on the choice of popular priors, both improper and proper (like the inverse gamma for the log-scale variance). For the estimation of the mean of a log-normal variable, this issue was first highlighted by @zellner1971bayesian and then the issues affecting the Bayesian estimation of the log-normal mean were faced by @fabrizi2012bayes and @fabrizi2016bayesian, wherein the log-normal linear model was considered. The core of their proposal consists of specifying a generalized inverse Gaussian (GIG) prior for the variance in the log-scale $\sigma^2$. In this way, existence conditions for the posterior moments of the target functionals to estimate were found and a careful inferential procedure in the Bayesian framework was proposed. 
 
-Functions that allows to carry out Bayesian inference for important functionals under the log-normality assumption are included in the `BayesLN` package. With respect to the theory covered in Fabrizi and Trivisano (2012, 2016), the `BayesLN` package offers tools for the estimation of quantiles and means under mixed models too.
+Functions that allows to carry out Bayesian inference for important functionals under the log-normality assumption are included in the `BayesLN` package. With respect to the theory covered in Fabrizi and Trivisano (2012, 2016), the `BayesLN` package offers tools for the estimation of quantiles [@gardini2020bayesian] and means under mixed models too.
 
 ## Some theoretical results
 
@@ -249,7 +249,7 @@ data_pred_new <- expand.grid(so=c(-1,1), subj=factor(12), item=factor(8))
 Mod_est_RT <- LN_hierarchical(formula_lme = log_rt ~ so +(1|subj)+(1|item), 
                               data_lme = ReadingTime, data_pred = data_pred_new, 
                               functional = c("Marginal", "Subject"), 
-                              nsamp = 5000, burnin = 2000)
+                              nsamp = 25000, burnin = 5000, n_thin = 5)
 ```
 
 As hinted before, the same priors for all the variance components are specified, choosing the most restrictive value for the parameter $\gamma$ (i.e. the highest one). To check the values, the element `$par_prior` of the output can be printed.
@@ -269,6 +269,7 @@ oldpar <- par(mfrow=c(2,3))
 traceplot(Mod_est_RT$samples$par[, 1:6])
 par(oldpar)
 ```
+
 
 Finally, the `$summaries` part contains the summary statistics of the posterior distributions of the parameters and the functionals required. It is possible to isolate the outputs related to the latter as follows.
 

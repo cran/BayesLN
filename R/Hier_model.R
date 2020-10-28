@@ -1,6 +1,8 @@
 
 #' @useDynLib BayesLN, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
+#' @importFrom Matrix t
+#' @importFrom methods as
 NULL
 
 
@@ -41,8 +43,10 @@ LN_hier_existence <-
            s = 1,
            m = NULL) {
     lev <- numeric(dim(Xtilde)[1])
+    invXtX<-solve(t(X) %*% X)
+    invZtZ<-MASS::ginv(t(Z) %*% Z)
     for (j in 1:dim(Xtilde)[1]) {
-      lev[j] <- Xtilde[j, ] %*% solve(t(X) %*% X) %*% t(Xtilde)[, j]
+      lev[j] <- Xtilde[j, ] %*% invXtX %*% t(Xtilde)[, j]
     }
     pred_cond_cond <- max(lev)
     if (s == 1) {
@@ -50,9 +54,9 @@ LN_hier_existence <-
       mat_inv <- solve(
         1e6 * t(X) %*% (diag(rep(1, dim(
           Z
-        )[1])) - Z %*% MASS::ginv(t(Z) %*% Z) %*% t(Z)) %*% X +
+        )[1])) - Z %*% invZtZ %*% t(Z)) %*% X +
           (t(X) %*% (
-            Z %*% MASS::ginv(t(Z) %*% Z) %*% MASS::ginv(t(Z) %*% Z) %*% t(Z)
+            Z %*% invZtZ %*% invZtZ %*% t(Z)
           ) %*% X)
       )
       for (j in 1:dim(Xtilde)[1]) {
@@ -72,10 +76,10 @@ LN_hier_existence <-
         mat_inv <- solve(
           1e6 * t(X) %*% (diag(rep(1, dim(
             Z
-          )[1])) - Z %*% MASS::ginv(t(Z) %*% Z) %*% t(Z)) %*% X +
+          )[1])) - Z %*% invZtZ %*% t(Z)) %*% X +
             (
               t(X) %*% (
-                Z %*% MASS::ginv(t(Z) %*% Z) %*% D %*% MASS::ginv(t(Z) %*% Z) %*% t(Z)
+                Z %*% invZtZ %*% D %*% invZtZ %*% t(Z)
               ) %*% X
             )
         )
@@ -123,6 +127,7 @@ LN_hier_existence <-
 #'@param nsamp Number of Monte Carlo iterations.
 #'@param par_tau List of vectors defining the triplets of hyperparaemters for each random effect variance (as many vectors as the number of specified random effects variances).
 #'@param par_sigma Vector containing the tiplet of hyperparameters for the prior of the data variance.
+#'@param var_pri_beta Prior variance for the model coefficients.
 #'@param inits List of object for initializing the chains. Objects with compatible dimensions must be named with \code{beta}, \code{sigma2} and \code{tau2}.
 #'@param verbose Logical. If \code{FALSE}, the messages from the Gibbs sampler are not shown.
 #'@param burnin Number of iterations to consider as burn-in.
@@ -166,6 +171,7 @@ LN_hierarchical <- function(formula_lme,
                             nsamp = 10000,
                             par_tau = NULL,
                             par_sigma = NULL,
+                            var_pri_beta = 1e3,
                             inits = list(NULL),
                             verbose = TRUE,
                             burnin = 0.1 * nsamp,
@@ -197,26 +203,35 @@ LN_hierarchical <- function(formula_lme,
   lmer_fitted <-
     suppressMessages(suppressWarnings(lme4::lmer(formula_lme, data = data_lme)))
   X <- as.matrix(lme4::getME(lmer_fitted, "X")[, ])
-  X <- array(X, dim = dim(X))
+  X <- array(X, dim = dim(X),dimnames = list(NULL, colnames(X)))
   y <- as.numeric(lme4::getME(lmer_fitted, "y"))
   Zlist <- lme4::getME(lmer_fitted, "Ztlist")
   s <- length(Zlist)
   Z <- NULL
   m <- numeric(s)
   for (i in 1:s) {
-    Z <- cbind(Z, t(as.matrix(Zlist[[i]])))
-    m[i] <- dim(as.matrix(Zlist[[i]]))[1]
+    Zlist[[i]]<-Matrix::t(Zlist[[i]])
+    Zprovv<- as.matrix(Zlist[[i]])
+    m[i] <- dim(Zprovv)[2]
+    colnames(Zprovv)<-paste(names(Zlist)[i],colnames(Zprovv), sep="_")
+    Z <- cbind(Z, Zprovv)
   }
-
+  Zprovv <- NULL
   if(is.null(data_pred)){
     Xtilde <- X
     Ztilde <- Z
+    Ztilde_list <- Zlist
   }else{
-    Xtilde <- matrix(X[-c(1:n),], ncol = ncol(X))
-    X <- matrix(X[1:n,], ncol = ncol(X))
-    Ztilde <- matrix(Z[-c(1:n),], ncol = ncol(Z))
-    Z <- matrix(Z[1:n,], ncol = ncol(Z))
+    Xtilde <- matrix(X[-c(1:n),], ncol = ncol(X), dimnames = list(NULL, colnames(X)))
+    X <- matrix(X[1:n,], ncol = ncol(X), dimnames = list(NULL, colnames(X)))
+    Ztilde <- matrix(Z[-c(1:n),], ncol = ncol(Z), dimnames = list(NULL, colnames(Z)))
+    Z <- matrix(Z[1:n,], ncol = ncol(Z), dimnames = list(NULL, colnames(Z)))
     y <- y[1:n]
+    Ztilde_list<-list(NULL)
+    for (i in 1:s) {
+      Zlist[[i]]<-Zlist[[i]][1:n,]
+      Ztilde_list[[i]]<-Zlist[[i]][-c(1:n),]
+    }
   }
 
   if (y_transf == FALSE) {
@@ -258,86 +273,6 @@ LN_hierarchical <- function(formula_lme,
       stop("par_tau must be a vector with dimension 3")
     }
   }
-  if (s == 1) {
-    ###Caso con due sole componenti di varianza
-    l_s <- par_sigma[1]
-    d_s <- par_sigma[2]
-    g_s <- par_sigma[3]
-    l_t <- par_tau[[1]][1]
-    d_t <- par_tau[[1]][2]
-    g_t <- par_tau[[1]][3]
-
-    beta <- matrix(nrow = nsamp, ncol = dim(X)[2])
-    sigma2 <- numeric(nsamp)
-    tau2 <- numeric(nsamp)
-
-    if (is.null(inits[["beta"]])) {
-      beta[1, ] <- solve(t(X) %*% X) %*% t(X) %*% y_log
-    } else{
-      beta[1, ] <- inits[["beta"]]
-    }
-    if (is.null(inits[["sigma2"]])) {
-      sigma2[1] <- 1
-    } else{
-      sigma2[1] <- inits[["sigma2"]]
-    }
-    if (is.null(inits[["tau2"]])) {
-      tau2[1] <- 1
-    } else{
-      tau2[1] <- inits[["tau2"]]
-    }
-
-    ###controlli su functional e altro
-
-    if (!("PostPredictive" %in% functional)) {
-      #call C++ function
-      output <-
-        .Call(
-          '_BayesLN_gibbs_norep',
-          PACKAGE = 'BayesLN',
-          y_log,
-          X,
-          Z,
-          l_s,
-          l_t,
-          d_s,
-          d_t,
-          g_s,
-          g_t,
-          nsamp,
-          as.numeric(verbose),
-          beta,
-          sigma2,
-          tau2
-        )
-    } else{
-      #call C++ function
-      output <-
-        .Call(
-          '_BayesLN_gibbs_rep',
-          PACKAGE = 'BayesLN',
-          y_log,
-          X,
-          Z,
-          Xtilde,
-          Ztilde,
-          l_s,
-          l_t,
-          d_s,
-          d_t,
-          g_s,
-          g_t,
-          nsamp,
-          as.numeric(verbose),
-          beta,
-          sigma2,
-          tau2
-        )
-
-      output$yrep <- exp(output$yrep)
-    }
-  } else{
-    ###caso con più componenti di varianza
     l_s <- par_sigma[1]
     d_s <- par_sigma[2]
     g_s <- par_sigma[3]
@@ -346,102 +281,63 @@ LN_hierarchical <- function(formula_lme,
     d_t <- par_tau_mat[, 2]
     g_t <- par_tau_mat[, 3]
     m_s_cum <- cumsum(m)
+    S_beta_pri<-var_pri_beta * diag(1, ncol(X))
 
-    beta <- matrix(nrow = nsamp, ncol = dim(X)[2])
-    sigma2 <- numeric(nsamp)
-    tau2 <- matrix(nrow = nsamp, ncol = s)
+    Precmat_Eff<-list(NULL)
+
+    for(i in 1:s){
+      Precmat_Eff[[i]] <- as(diag(1,nrow = m[i]), "dgCMatrix")
+    }
 
     if (is.null(inits[["beta"]])) {
-      beta[1, ] <- solve(t(X) %*% X) %*% t(X) %*% y_log
+      beta_init <- solve(t(X) %*% X) %*% t(X) %*% y_log
     } else{
-      beta[1, ] <- inits[["beta"]]
+      beta_init <- inits[["beta"]]
     }
     if (is.null(inits[["sigma2"]])) {
-      sigma2[1] <- 1
+      sigma2_init <- 1
     } else{
-      sigma2[1] <- inits[["sigma2"]]
+      sigma2_init <- inits[["sigma2"]]
     }
     if (is.null(inits[["tau2"]])) {
-      tau2[1, ] <- rep(1, s)
+      tau2_init <- rep(1, s)
     } else{
-      tau2[1, ] <- inits[["tau2"]]
+      tau2_init <- inits[["tau2"]]
     }
 
-    if (!("PostPredictive" %in% functional)) {
-      #call C++ function
-      output <-
-        .Call(
-          '_BayesLN_gibbs_norep_r',
-          PACKAGE = 'BayesLN',
-          y_log,
-          X,
-          Z,
-          l_s,
-          l_t,
-          d_s,
-          d_t,
-          g_s,
-          g_t,
-          s,
-          m_s_cum,
-          m,
-          nsamp,
-          as.numeric(verbose),
-          beta,
-          sigma2,
-          tau2
-        )
-    } else{
-      #call C++ function
-      output <-
-        .Call(
-          '_BayesLN_gibbs_rep_r',
-          PACKAGE = 'BayesLN',
-          y_log,
-          X,
-          Z,
-          Xtilde,
-          Ztilde,
-          l_s,
-          l_t,
-          d_s,
-          d_t,
-          g_s,
-          g_t,
-          s,
-          m_s_cum,
-          m,
-          nsamp,
-          as.numeric(verbose),
-          beta,
-          sigma2,
-          tau2
-        )
-      output$yrep <- exp(output$yrep)
+      output <-   .Call(`_BayesLN_MCMC_alg`, y_log, X, Zlist, Precmat_Eff,
+                       S_beta_pri, l_s, l_t, d_s, d_t, g_s, g_t, s,
+                       nsamp, as.numeric(verbose), beta_init, sigma2_init, tau2_init)
 
-    }
-  }
+      if ("PostPredictive" %in% functional){
+        output["yrep"] <- .Call(`_BayesLN_post_pred`, output, Xtilde, Ztilde_list, s, nsamp)
+        output$yrep <- exp(output$yrep)
+      }
+
+
   if (is.null(colnames(X))) {
     colnames(output$beta) <- paste("beta", 0:(dim(X)[2] - 1))
   } else{
-    colnames(output$beta) <- paste("beta", colnames(X))
+    colnames(output$beta) <- colnames(X)
   }
-  colnames(output$u) <- paste("u", 1:(dim(Z)[2]))
+    u_unlist<-output$u[[1]]
+    if(s>1){
+    for(i in 2:s){
+      u_unlist<-cbind(u_unlist,output$u[[i]])
+    }
+    }
+    output$u<-u_unlist
+  colnames(output$u) <- colnames(Z)
 
-  out.mat <-
-    cbind(output$tau2, output$sigma2, output$beta, output$u)
-  colnames(out.mat)[1:(s + 1)] <- c(rep("tau2", s), "sigma2")
-  summ1 <-
-    summary(coda::mcmc(out.mat[seq(burnin + 1, nsamp, by = n_thin), ], start =
+  out.mat <- cbind(output$tau2, output$sigma2, output$beta, output$u)
+  colnames(out.mat)[1:(s + 1)] <- c(paste("tau2", names(Zlist), sep="_"), "sigma2")
+  summ1 <-  summary(coda::mcmc(out.mat[seq(burnin + 1, nsamp, by = n_thin), ], start =
                          burnin + 1, thin = n_thin))
-  par_summ <-
-    round(cbind(summ1[[1]][, -4], summ1[[2]], "N_eff" = coda::effectiveSize(
-      coda::mcmc(out.mat[seq(burnin + 1, nsamp, by = n_thin), ], start = burnin +
-                   1, thin = n_thin)
-    )), 3)
-  samples <-
-    list(par = coda::mcmc(out.mat[seq(burnin + 1, nsamp, by = n_thin), ], start =
-                            burnin + 1, thin = n_thin))
+  par_summ <- round(cbind(summ1[[1]][, -4], summ1[[2]], "N_eff" = coda::effectiveSize(
+                    coda::mcmc(out.mat[seq(burnin + 1, nsamp, by = n_thin), ], start = burnin +
+                    1, thin = n_thin))), 3)
+  samples <- list(par = coda::mcmc(out.mat[seq(burnin + 1, nsamp, by = n_thin), ], start =
+                  burnin + 1, thin = n_thin))
   iter <- paste(summ1$start, ":", nsamp, sep = "")
   ssize <- length(seq(burnin + 1, nsamp, by = n_thin))
   summaries <-
@@ -535,11 +431,10 @@ LN_hierarchical <- function(formula_lme,
   par_prior <- rbind(par_sigma, matrix(unlist(par_tau), ncol = 3, byrow = T))
   colnames(par_prior)<-c("lambda", "delta", "gamma")
   rownames(par_prior)[1]<-"sigma2"
-  rownames(par_prior)[2:(s+1)]<-paste("tau2_",1:s,sep = "")
+  rownames(par_prior)[2:(s+1)]<-paste("tau2_",names(Zlist),sep = "")
 
   return(list(par_prior=par_prior,
               samples = samples,
               summaries = summaries))
 }
-
 

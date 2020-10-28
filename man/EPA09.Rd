@@ -4,7 +4,9 @@
 \name{EPA09}
 \alias{EPA09}
 \title{Chrysene concentration data}
-\format{Numeric vector.}
+\format{
+Numeric vector.
+}
 \source{
 USEPA. \emph{Statistical analysis of groundwater monitoring data at rcra facilities: Unifed guidance.}
 Technical report, Office of Resource Conservation and Recovery, Program Implementation

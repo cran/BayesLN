@@ -3,6 +3,9 @@
 \name{LN_Quant}
 \alias{LN_Quant}
 \title{Bayesian estimate of the log-normal quantiles}
+\source{
+Gardini, A., C. Trivisano, and E. Fabrizi. \emph{Bayesian inference for quantiles of the log-normal distribution.} Biometrical Journal (2020).
+}
 \usage{
 LN_Quant(
   x,

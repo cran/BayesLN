@@ -4,11 +4,13 @@
 \name{laminators}
 \alias{laminators}
 \title{Laminators}
-\format{Dataframe with variables:
+\format{
+Dataframe with variables:
 
 \code{Worker}: label of the measured worker.
 
-\code{log_Y}: logarithm of the measured Styrene concentration.}
+\code{log_Y}: logarithm of the measured Styrene concentration.
+}
 \source{
 R. H. Lyles, L. L. Kupper, and S. M. Rappaport. \emph{Assessing regulatory compliance of occupational exposures via the balanced one-way random effects ANOVA model} Journal of Agricultural, Biological, and Environmental Statistics (1997).
 }

@@ -112,6 +112,11 @@ functional_delta <- function(x, n, quant, gamma, sigma2,lambda, nreg=1, rel_tol 
 #' The function returns the prior parameters and their posterior values, summary statistics of the log-scale parameters and the estimate of the specified quantile:
 #' the posterior mean and variance are provided by default. Moreover, the user can control the computation of posterior intervals.
 #'
+#'@source
+#'
+#'Gardini, A., C. Trivisano, and E. Fabrizi. \emph{Bayesian inference for quantiles of the log-normal distribution.} Biometrical Journal (2020).
+#'
+#'
 #' @examples
 #'library(BayesLN)
 #'data("EPA09")
@@ -300,6 +305,11 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
 #'@return
 #' The function returns the prior parameters and their posterior values, summary statistics of the parameters \eqn{\beta} and \eqn{\sigma^2}, and the estimate of the specified quantile:
 #' the posterior mean and variance are provided by default. Moreover the user can control the computation of posterior intervals.
+#'
+#'#'@source
+#'
+#'Gardini, A., C. Trivisano, and E. Fabrizi. \emph{Bayesian inference for quantiles of the log-normal distribution.} Biometrical Journal (2020).
+#'
 #'
 #'
 #' @export

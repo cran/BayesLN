@@ -4,7 +4,8 @@
 \name{ReadingTime}
 \alias{ReadingTime}
 \title{Reading Times data}
-\format{Dataframe with variables:
+\format{
+Dataframe with variables:
 
 \code{subj}: label indicating the subject.
 
@@ -12,7 +13,8 @@
 
 \code{so}: variable assuming value 1 (object relative condition) and -1 (subject relative condition).
 
-\code{log_rt}: logarithm of the reading time measured.}
+\code{log_rt}: logarithm of the reading time measured.
+}
 \source{
 E. Gibson and H.-H. I. Wu. \emph{Processing chinese relative clauses in context.} Language and Cognitive Processes, 28(1-2):125-155. (2008).
 }

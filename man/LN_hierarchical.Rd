@@ -14,6 +14,7 @@ LN_hierarchical(
   nsamp = 10000,
   par_tau = NULL,
   par_sigma = NULL,
+  var_pri_beta = 1000,
   inits = list(NULL),
   verbose = TRUE,
   burnin = 0.1 * nsamp,
@@ -40,6 +41,8 @@ both the fixed-effects and random-effects part of the model is required. For det
 \item{par_tau}{List of vectors defining the triplets of hyperparaemters for each random effect variance (as many vectors as the number of specified random effects variances).}
 
 \item{par_sigma}{Vector containing the tiplet of hyperparameters for the prior of the data variance.}
+
+\item{var_pri_beta}{Prior variance for the model coefficients.}
 
 \item{inits}{List of object for initializing the chains. Objects with compatible dimensions must be named with \code{beta}, \code{sigma2} and \code{tau2}.}
 

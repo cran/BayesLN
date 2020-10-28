@@ -58,6 +58,10 @@ Default set to \code{1e-5}.}
 \value{
 The function returns the prior parameters and their posterior values, summary statistics of the parameters \eqn{\beta} and \eqn{\sigma^2}, and the estimate of the specified quantile:
 the posterior mean and variance are provided by default. Moreover the user can control the computation of posterior intervals.
+
+#'@source
+
+Gardini, A., C. Trivisano, and E. Fabrizi. \emph{Bayesian inference for quantiles of the log-normal distribution.} Biometrical Journal (2020).
 }
 \description{
 This function produces a point estimate for the log-normal distribution quantile of fixed level \code{quant}.

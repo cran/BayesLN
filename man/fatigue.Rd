@@ -4,11 +4,13 @@
 \name{fatigue}
 \alias{fatigue}
 \title{Low cycle fatigue data}
-\format{Dataframe with variables:
+\format{
+Dataframe with variables:
 
 \code{stress}: stress factor.
 
-\code{cycle}: number of test cycles.}
+\code{cycle}: number of test cycles.
+}
 \source{
 Upadhyay, S. K., and M. Peshwani. \emph{Posterior analysis of lognormal regression models using
 the Gibbs sampler.} Statistical Papers 49.1 (2008): 59-85.
