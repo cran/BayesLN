@@ -171,7 +171,7 @@ LN_hierarchical <- function(formula_lme,
                             nsamp = 10000,
                             par_tau = NULL,
                             par_sigma = NULL,
-                            var_pri_beta = 1e3,
+                            var_pri_beta = 1e4,
                             inits = list(NULL),
                             verbose = TRUE,
                             burnin = 0.1 * nsamp,
@@ -229,8 +229,8 @@ LN_hierarchical <- function(formula_lme,
     y <- y[1:n]
     Ztilde_list<-list(NULL)
     for (i in 1:s) {
-      Zlist[[i]]<-Zlist[[i]][1:n,]
       Ztilde_list[[i]]<-Zlist[[i]][-c(1:n),]
+      Zlist[[i]]<-Zlist[[i]][1:n,]
     }
   }
 
@@ -310,7 +310,7 @@ LN_hierarchical <- function(formula_lme,
                        nsamp, as.numeric(verbose), beta_init, sigma2_init, tau2_init)
 
       if ("PostPredictive" %in% functional){
-        output["yrep"] <- .Call(`_BayesLN_post_pred`, output, Xtilde, Ztilde_list, s, nsamp)
+        output[["yrep"]] <- .Call(`_BayesLN_post_pred`, output, Xtilde, Ztilde_list, s, nsamp)
         output$yrep <- exp(output$yrep)
       }
 

@@ -17,7 +17,7 @@ LN_QuantReg(
   alpha_CI = 0.05,
   type_CI = "two-sided",
   rel_tol_CI = 1e-05,
-  nrep = 1e+05
+  nrep_CI = 1e+05
 )
 }
 \arguments{
@@ -53,7 +53,7 @@ Credible Limit) for lower one-sided intervals.}
 \item{rel_tol_CI}{Level of relative tolerance required for the \code{integrate} procedure or for the infinite sum.
 Default set to \code{1e-5}.}
 
-\item{nrep}{Number of simulations for the C.I. in case of \code{method="simulation"} and for the posterior of the coefficients vector.}
+\item{nrep_CI}{Number of simulations for the C.I. in case of \code{method="simulation"} and for the posterior of the coefficients vector.}
 }
 \value{
 The function returns the prior parameters and their posterior values, summary statistics of the parameters \eqn{\beta} and \eqn{\sigma^2}, and the estimate of the specified quantile:

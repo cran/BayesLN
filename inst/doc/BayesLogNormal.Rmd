@@ -182,7 +182,7 @@ The interval is added to the previous output, noting that the posterior quantile
 The same procedures can be implemented also if the interest is in estimating a quantile $\theta_p$ under the log-normality assumption. For example, if the target is quantile $p=0.95$, to find an optimal point estimate it is possible to use the following command. 
 
 ```{r}
-LN_Quant(x = EPA09, quant = 0.95, method = "optimal", CI = FALSE)
+LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "optimal", CI = FALSE)
 ```
 
 The output is similar to the one printed for the mean $\theta_m$ and in this case the posterior mean and standard deviation of the desired quantile $\theta_p$ are reported. To compute an interval estimate, the function can be used as showed for `LN_Mean()`.

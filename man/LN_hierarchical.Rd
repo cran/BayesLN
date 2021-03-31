@@ -14,7 +14,7 @@ LN_hierarchical(
   nsamp = 10000,
   par_tau = NULL,
   par_sigma = NULL,
-  var_pri_beta = 1000,
+  var_pri_beta = 10000,
   inits = list(NULL),
   verbose = TRUE,
   burnin = 0.1 * nsamp,

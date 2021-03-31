@@ -81,8 +81,13 @@ LN_Mean <- function (x, method = "weak_inf", x_transf = TRUE, CI = TRUE,
   log_par[1,3:5]<-ghyp::qghyp(p = c(0.05, 0.5, 0.95), xi_post)
   log_par[2,1]<-ghyp::Egig(lambda = l_bar, chi = delta_bar^2*n,psi = g^2, func = "x")
   log_par[2,2]<-ghyp::Egig(lambda = l_bar, chi = delta_bar^2*n,psi = g^2, func = "var")
-  log_par[2,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l_bar, chi = delta_bar^2*n,psi = g^2)
-  colnames(log_par)<-c("Mean","Var","p=0.05","p=0.50","p=0.95")
+  log_par[2,3:5]<-suppressWarnings(ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l_bar, chi = delta_bar^2*n,psi = g^2))
+  if(sum(is.na(log_par[2,3:5]))>0){
+    message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
+    sample_GIG<-ghyp::rgig(n=nrep, lambda = l_bar, chi = delta_bar^2*n,psi = g^2)
+    log_par[2,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
+  }
+   colnames(log_par)<-c("Mean","Var","p=0.05","p=0.50","p=0.95")
   rownames(log_par)<-c("xi","sigma2")
 
 
@@ -241,7 +246,13 @@ LN_MeanReg <- function(y, X, Xtilde, method = "weak_inf", y_transf=TRUE, h=NULL,
   sigma2<-matrix(nrow = 1, ncol = 5)
   sigma2[1,1]<-ghyp::Egig(lambda = l_bar, chi = delta_bar^2/h,psi = g^2, func = "x")
   sigma2[1,2]<-ghyp::Egig(lambda = l_bar, chi = delta_bar^2/h, psi = g^2, func = "var")
-  sigma2[1,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l_bar, chi = delta_bar^2/h, psi = g^2)
+  sigma2[1,3:5]<-suppressWarnings(ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l_bar, chi = delta_bar^2/h, psi = g^2))
+  if(sum(is.na(sigma2[1,3:5]))>0){
+    message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
+    sample_GIG<-ghyp::rgig(n=nrep, lambda = l_bar, chi = delta_bar^2/h, psi = g^2)
+    sigma2[1,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
+  }
+
   colnames(sigma2)<-c("Mean","Var","q5","q50","q95")
   rownames(sigma2)<-c("sigma2")
 

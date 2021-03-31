@@ -18,7 +18,7 @@ LN_Mean(x = EPA09, x_transf = FALSE, method = "optimal", CI = FALSE)
 LN_Mean(x = EPA09, x_transf = FALSE, method = "weak_inf", alpha_CI = 0.05, type_CI = "UCL")
 
 ## -----------------------------------------------------------------------------
-LN_Quant(x = EPA09, quant = 0.95, method = "optimal", CI = FALSE)
+LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "optimal", CI = FALSE)
 
 ## -----------------------------------------------------------------------------
 # Load data

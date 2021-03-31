@@ -5,7 +5,7 @@ extern "C"
 }
 #include <RcppEigen.h>
 using namespace Rcpp;
-
+// [[Rcpp::interfaces(r, cpp)]]
 
 // [[Rcpp::depends(RcppEigen)]]
 
@@ -17,6 +17,7 @@ void rmn_mu_S2(Eigen::VectorXd &rnd_vec,const int p,
   Eigen::VectorXd z=Rcpp::as<Eigen::VectorXd>(Rcpp::rnorm(p));
   rnd_vec=mu+S.llt().matrixL()*z;
 }
+
 
 // [[Rcpp::export]]
 Rcpp::List MCMC_alg(const Eigen::VectorXd y,

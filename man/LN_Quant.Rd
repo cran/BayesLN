@@ -71,8 +71,8 @@ informative proposal and an optimal one.
 \examples{
 library(BayesLN)
 data("EPA09")
-LN_Quant(x = EPA09, quant = 0.95, method = "optimal", CI = FALSE)
-LN_Quant(x = EPA09, quant = 0.95, method = "weak_inf",
+LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "optimal", CI = FALSE)
+LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "weak_inf",
         alpha_CI = 0.05, type_CI = "UCL")
 
 }

@@ -120,8 +120,8 @@ functional_delta <- function(x, n, quant, gamma, sigma2,lambda, nreg=1, rel_tol 
 #' @examples
 #'library(BayesLN)
 #'data("EPA09")
-#'LN_Quant(x = EPA09, quant = 0.95, method = "optimal", CI = FALSE)
-#'LN_Quant(x = EPA09, quant = 0.95, method = "weak_inf",
+#'LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "optimal", CI = FALSE)
+#'LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "weak_inf",
 #'         alpha_CI = 0.05, type_CI = "UCL")
 #'
 #' @export
@@ -140,14 +140,14 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
   } else {
     x <- x
   }
-  mu <- mean(log(x))
-  s2 <- var(log(x))
+  mu <- mean(x)
+  s2 <- var(x)
   n <- length(x)
   beta <- qnorm(p = quant,mean = 0,sd = 1) * sqrt(n)
   if(method == "weak_inf"){
     l <- -(n / 2 - 0.5)
     g <- (3 / sqrt(n)) * sqrt(n)
-    d <- sqrt(sum((log(x) - mu) ^ 2) + 0.1 ^ 2) / sqrt(n)
+    d <- sqrt(sum((x - mu) ^ 2) + 0.1 ^ 2) / sqrt(n)
     par <- round(matrix(c(0, 0.01, 3 / sqrt(n),
                           NA, NA, l, d, g, mu, beta), ncol = 5, byrow = T), 3)
   }else if(method=="optimal"){
@@ -162,7 +162,7 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
                               quant = quant, delta = delta, sigma2 = s2, lambda = 0)$p1
       gamma<-ifelse(is.na(gamma),yes = 10,no = gamma)
       g <- gamma * sqrt(n)
-      d <- sqrt(sum((log(x) - mu)^2) + delta^2) / sqrt(n)
+      d <- sqrt(sum((x - mu)^2) + delta^2) / sqrt(n)
     }else{
       gamma <- (3 / sqrt(n))
       s2 <- ifelse(is.numeric(guess_s2), yes = guess_s2, no = s2)
@@ -170,7 +170,7 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
                               quant = quant, gamma = gamma, sigma2 = s2, lambda = 0)$p1
       delta<-ifelse(is.na(delta),yes = 1,no = delta)
       g <- gamma * sqrt(n)
-      d <- sqrt(sum((log(x) - mu)^2) + delta^2) / sqrt(n)
+      d <- sqrt(sum((x - mu)^2) + delta^2) / sqrt(n)
     }
     par <- round(matrix(c(0, delta, gamma, NA, NA, l, d, g, mu, beta), ncol = 5, byrow = T), 3)
   }else{
@@ -192,7 +192,7 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
 
   if(CI == FALSE){
     xi_post=ghyp::ghyp.ad(mu = mu, delta = d, alpha = g,
-                         lambda = l, beta = 0)
+                          lambda = l, beta = 0)
     log_par<-matrix(nrow = 2, ncol = 5)
     log_par[1,1]<-ghyp::ghyp.moment(xi_post, order = 1, central = F)
     log_par[1,2]<-ghyp::ghyp.moment(xi_post, order = 2, central = T)
@@ -200,6 +200,11 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
     log_par[2,1]<-ghyp::Egig(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2, func = "x")
     log_par[2,2]<-ghyp::Egig(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2, func = "var")
     log_par[2,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+    if(sum(is.na(log_par[2,3:5]))>0){
+      message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
+      sample_GIG<-ghyp::rgig(n=nrep_CI, lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+      log_par[2,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
+    }
     colnames(log_par)<-c("Mean","Var","p=0.05","p=0.50","p=0.95")
     rownames(log_par)<-c("xi","sigma2")
     return(list(Quantile = quant, Parameters = par,
@@ -209,8 +214,18 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
       stop("method_CI must be between 'exact' or 'simulation'")
     if (type_CI == "two-sided") {
       if (method_CI == "exact") {
-        low <- qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu, p = alpha_CI / 2, rel_tol = rel_tol_CI)
-        up <- qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu, p = (1 - alpha_CI / 2), rel_tol = rel_tol_CI)
+        low <- tryCatch(expr = qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu, p = alpha_CI / 2, rel_tol = rel_tol_CI),
+                        error= function(e){
+                          message("An error occurred in fininding quantiles of the quantile posterior: computed using Monte Carlo")
+                          sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu)
+                          return(quantile(x = sample, probs = alpha_CI / 2))
+                        } )
+        up <- tryCatch(expr = qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu, p = (1 - alpha_CI / 2), rel_tol = rel_tol_CI),
+                       error= function(e){
+                         message("An error occurred in fininding quantiles of the quantile posterior: computed using Monte Carlo")
+                         sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu)
+                         return(quantile(x = sample, probs = (1 - alpha_CI / 2)))
+                       } )
       } else {
         sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu)
         low <- quantile(x = sample, probs = alpha_CI / 2)
@@ -218,7 +233,12 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
       }
     } else if (type_CI == "LCL") {
       if (method_CI == "exact") {
-        low <- qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu, p = alpha_CI, rel_tol = rel_tol_CI)
+        low <- tryCatch(expr = qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu, p = alpha_CI, rel_tol = rel_tol_CI),
+                        error= function(e){
+                          message("An error occurred in fininding quantiles of the quantile posterior: computed using Monte Carlo")
+                          sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu)
+                          return(quantile(x = sample, probs = alpha_CI))
+                        } )
       } else {
         sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu)
         low <- quantile(x = sample, probs = alpha_CI)
@@ -227,7 +247,12 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
     } else if (type_CI == "UCL") {
       low <- 0
       if (method_CI == "exact") {
-        up <- qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu, p = (1 - alpha_CI), rel_tol = rel_tol_CI)
+        up <- tryCatch(expr = qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu, p = (1 - alpha_CI), rel_tol = rel_tol_CI),
+                       error= function(e){
+                         message("An error occurred in fininding quantiles of the quantile posterior: computed using Monte Carlo")
+                         sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu)
+                         return(quantile(x = sample, probs = (1 - alpha_CI)))
+                       } )
       } else {
         sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu)
         up <- quantile(x = sample, probs = (1 - alpha_CI))
@@ -244,6 +269,11 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
     log_par[2,1]<-ghyp::Egig(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2, func = "x")
     log_par[2,2]<-ghyp::Egig(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2, func = "var")
     log_par[2,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+    if(sum(is.na(log_par[2,3:5]))>0){
+      message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
+      sample_GIG<-ghyp::rgig(n=nrep_CI, lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+      log_par[2,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
+    }
     colnames(log_par)<-c("Mean","Var","p=0.05","p=0.50","p=0.95")
     rownames(log_par)<-c("xi","sigma2")
     limits<- c(low, up)
@@ -253,7 +283,6 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
   }
 
 }
-
 
 
 
@@ -284,7 +313,7 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
 #'Credible Limit) for lower one-sided intervals.
 #'@param rel_tol_CI Level of relative tolerance required for the \code{integrate} procedure or for the infinite sum.
 #' Default set to \code{1e-5}.
-#'@param nrep Number of simulations for the C.I. in case of \code{method="simulation"} and for the posterior of the coefficients vector.
+#'@param nrep_CI Number of simulations for the C.I. in case of \code{method="simulation"} and for the posterior of the coefficients vector.
 #'
 #'@details
 #' The function allows to carry out Bayesian inference for the conditional quantiles of a sample that is assumed log-normally distributed.
@@ -316,7 +345,7 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
 
 
 LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL, y_transf=TRUE, CI = TRUE,
-                        method_CI = "exact",alpha_CI = 0.05, type_CI = "two-sided",rel_tol_CI = 1e-5, nrep = 100000) {
+                        method_CI = "exact",alpha_CI = 0.05, type_CI = "two-sided",rel_tol_CI = 1e-5, nrep_CI = 100000) {
   if(is.vector(y) == FALSE)
     stop("y must be a vector")
   if(is.matrix(Xtilde) == FALSE)
@@ -422,7 +451,7 @@ LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL,
   V<-solve(t(X)%*%X)
 
   for(j in 1:nreg){
-    gen <- suppressWarnings(ghyp::rghyp(n = nrep, object = ghyp::ghyp.ad(lambda = l,
+    gen <- suppressWarnings(ghyp::rghyp(n = nrep_CI, object = ghyp::ghyp.ad(lambda = l,
                                                         alpha = gamma / sqrt(diag(V)[j]), delta = sqrt(RSS + delta^2)*sqrt(diag(V)[j]),
                                                         mu =  as.numeric(l_mod$coefficients[j]))))
     beta_post[j,1]<-mean(gen)
@@ -436,6 +465,11 @@ LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL,
     sigma2[1,1]<-ghyp::Egig(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2, func = "x")
     sigma2[1,2]<-ghyp::Egig(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2, func = "var")
     sigma2[1,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+    if(sum(is.na(sigma2[1,3:5]))>0){
+      message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
+      sample_GIG<-ghyp::rgig(n=nrep_CI,  lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+      sigma2[1,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
+    }
     colnames(sigma2)<-c("Mean","Var","q5","q50","q95")
     rownames(sigma2)<-c("sigma2")
     return(list(Quantile = quant, Parameters = par, Leverage = h, Sigma2=sigma2, Coefficients = beta_post, Post_Estimates = as.matrix(data.frame(Mean=est, S.d.=sqrt(var)))))
@@ -447,12 +481,22 @@ LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL,
     if (type_CI == "two-sided") {
       if (method_CI == "exact") {
         for(i in 1:n_pred){
-        low[i] <- qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i], p = alpha_CI / 2, rel_tol = rel_tol_CI)
-        up[i] <- qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i], p = (1 - alpha_CI / 2), rel_tol = rel_tol_CI)
+        low[i] <- tryCatch(expr = qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i], p = alpha_CI / 2, rel_tol = rel_tol_CI),
+                           error= function(e){
+                             message("An error occurred in fininding quantiles of the quantile posterior: computed using Monte Carlo")
+                             sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
+                             return(quantile(x = sample, probs = alpha_CI / 2))
+                           } )
+        up[i] <- tryCatch(expr = qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i], p = (1 - alpha_CI / 2), rel_tol = rel_tol_CI),
+                          error= function(e){
+                            message("An error occurred in fininding quantiles of the quantile posterior: computed using Monte Carlo")
+                            sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
+                            return(quantile(x = sample, probs = (1 - alpha_CI / 2)))
+                          } )
         }
         } else {
           for(i in 1:n_pred){
-        sample <- rlSMNG(n = nrep, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
+        sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
         low[i] <- quantile(x = sample, probs = alpha_CI / 2)
         up[i] <- quantile(x = sample, probs = (1 - alpha_CI / 2))
           }
@@ -460,9 +504,14 @@ LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL,
     } else if (type_CI == "LCL") {
       for(i in 1:n_pred){
       if (method_CI == "exact") {
-        low[i] <- qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i], p = alpha_CI, rel_tol = rel_tol_CI)
+        low[i] <- tryCatch(expr = qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i], p = alpha_CI, rel_tol = rel_tol_CI),
+                           error= function(e){
+                             message("An error occurred in fininding quantiles of the quantile posterior: computed using Monte Carlo")
+                             sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
+                             return(quantile(x = sample, probs = alpha_CI))
+                           } )
       } else {
-        sample <- rlSMNG(n = nrep, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
+        sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
         low[i] <- quantile(x = sample, probs = alpha_CI)
       }
       up[i] <- Inf
@@ -471,9 +520,14 @@ LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL,
       for(i in 1:n_pred){
       low[i] <- 0
       if (method_CI == "exact") {
-        up[i] <- qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i], p = (1 - alpha_CI), rel_tol = rel_tol_CI)
+        up[i] <- tryCatch(expr = qlSMNG(lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i], p = (1 - alpha_CI), rel_tol = rel_tol_CI),
+                          error= function(e){
+                            message("An error occurred in fininding quantiles of the quantile posterior: computed using Monte Carlo")
+                            sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
+                            return(quantile(x = sample, probs = (1 - alpha_CI)))
+                          } )
       } else {
-        sample <- rlSMNG(n = nrep, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
+        sample <- rlSMNG(n = nrep_CI, lambda = l, gamma = g, delta = d, beta = beta, mu = mu[i])
         up[i] <- quantile(x = sample, probs = (1 - alpha_CI))
       }
       }
@@ -485,7 +539,13 @@ LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL,
     sigma2<-matrix(nrow = 1, ncol = 5)
     sigma2[1,1]<-ghyp::Egig(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2, func = "x")
     sigma2[1,2]<-ghyp::Egig(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2, func = "var")
-    sigma2[1,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+    sigma2[1,3:5]<-suppressWarnings(ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2))
+    if(sum(is.na(sigma2[1,3:5]))>0){
+      message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
+      sample_GIG<-ghyp::rgig(n=nrep_CI,  lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+      sigma2[1,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
+    }
+
     colnames(sigma2)<-c("Mean","Var","q5","q50","q95")
     rownames(sigma2)<-c("sigma2")
     return(list(Quantile = quant, Parameters = par, Sigma2=sigma2, Coefficients = beta_post,

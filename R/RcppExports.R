@@ -13,3 +13,7 @@ post_pred <- function(output, Xrep, Zrep_list, s, nsamp) {
     .Call(`_BayesLN_post_pred`, output, Xrep, Zrep_list, s, nsamp)
 }
 
+# Register entry points for exported C++ functions
+methods::setLoadAction(function(ns) {
+    .Call('_BayesLN_RcppExport_registerCCallable', PACKAGE = 'BayesLN')
+})
