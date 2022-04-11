@@ -9,6 +9,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // rmn_mu_S2
 void rmn_mu_S2(Eigen::VectorXd& rnd_vec, const int p, const Eigen::VectorXd mu, const Eigen::MatrixXd S);
 static SEXP _BayesLN_rmn_mu_S2_try(SEXP rnd_vecSEXP, SEXP pSEXP, SEXP muSEXP, SEXP SSEXP) {

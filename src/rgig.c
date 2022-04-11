@@ -17,7 +17,7 @@
 #include <R.h>
 #include <Rmath.h>
 
-#define ZTOL sqrt(DOUBLE_EPS)
+#define ZTOL sqrt(DBL_EPSILON)
 
 /*
  * gig_y_gfn:
@@ -73,7 +73,7 @@ double lambda;                          /* specific to gig_y_gfn */
 	a = b;  b = c;  c = a;          /* best approximation		*/
 	fa=fb;  fb=fc;  fc=fa;
     }
-    tol_act = 2.0*DOUBLE_EPS*fabs(b) + tol/2.0;
+    tol_act = 2.0*DBL_EPSILON*fabs(b) + tol/2.0;
     new_step = (c-b)/2.0;
 
     if( fabs(new_step) <= tol_act || fb == (double)0 )

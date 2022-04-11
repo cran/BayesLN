@@ -1,4 +1,4 @@
-2058a03675b313115ba075522c415bac *DESCRIPTION
+cdb9ea31f5441971239e40b6d3a7a9d2 *DESCRIPTION
 fe4c5019d5c5d7c0594db574e588ae3e *NAMESPACE
 329d4774c9856f0f84cea2862f17a090 *R/Est_quant.R
 90df946646a3a8e309b0f2167fef2e4f *R/Hier_model.R
@@ -6,7 +6,7 @@ fe4c5019d5c5d7c0594db574e588ae3e *NAMESPACE
 09480b15bb7805e2140bad69c2f74c5d *R/RcppExports.R
 b6cd0afc0b20f639b723f69c5ff3d34a *R/data.R
 02dbd1f0c3fe3d716e789ed60ff2eaba *R/prob_func.R
-0d8d4a97425e208124f59cb61f0815e3 *build/vignette.rds
+ab5eaa1204b1318b72f470fc5869f40f *build/vignette.rds
 6e0bd372a6e50bd6b8645d55edeea716 *data/EPA09.rda
 a553a8b888c6b676cf812c81fcb1258d *data/NCBC.rda
 f6d555c0cd1cbff14bd3d59d821302f2 *data/ReadingTime.rda
@@ -14,7 +14,7 @@ f6d555c0cd1cbff14bd3d59d821302f2 *data/ReadingTime.rda
 f3a587235a2582b616134c5cd4b0a17f *data/laminators.rda
 65c9aa822c2e3590fa47232570cc9b79 *inst/doc/BayesLogNormal.R
 56afb2927c424e4b865ba86893a8501d *inst/doc/BayesLogNormal.Rmd
-f06595803c5b11cb37d07780a6fb1e86 *inst/doc/BayesLogNormal.html
+4b7b857bf75bbb1f0770b2e1718e119d *inst/doc/BayesLogNormal.html
 3c6381d64d59cc89e64d2bbe018863c8 *inst/include/BayesLN.h
 139240581a3b14ce1417ef9b6a4de008 *inst/include/BayesLN_RcppExports.h
 6945045cb902a4071aa565281f5a024e *man/EPA09.Rd
@@ -48,10 +48,10 @@ faa613d0b270545b9dc06cf3c5521103 *man/momentRecursion.Rd
 4ea9486ed74ecb02d018c7ce136103fe *man/zerfun_log.Rd
 2a0e2b106b7d03eae74c9cc29387a670 *src/Makevars
 2a0e2b106b7d03eae74c9cc29387a670 *src/Makevars.win
-a24e7620cd7143c92b19b29fdfbaea53 *src/RcppExports.cpp
+d4e9c28aefc85d8c0a22013705b43540 *src/RcppExports.cpp
 0d0755f47fb16111bf9208e763b00372 *src/gibbs.cpp
 2a9fa3b7b283d15c4bfeed8c133e958d *src/gig_generator.h
-12f7771c13010c9c294b0892b8d62cab *src/rgig.c
+a7e0619676ac857e59afeb4a116be54d *src/rgig.c
 61691c03c21272540ec7845b042e41fe *src/rgig.h
 56afb2927c424e4b865ba86893a8501d *vignettes/BayesLogNormal.Rmd
 89523c90bd6b0fdccafdd2e8c5bad4b3 *vignettes/bibliography.bib
