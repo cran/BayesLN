@@ -73,6 +73,6 @@ library(BayesLN)
 data("EPA09")
 LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "optimal", CI = FALSE)
 LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "weak_inf",
-        alpha_CI = 0.05, type_CI = "UCL")
+        alpha_CI = 0.05, type_CI = "UCL", nrep_CI = 1e3) # increase nrep_CI
 
 }

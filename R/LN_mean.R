@@ -73,21 +73,16 @@ LN_Mean <- function (x, method = "weak_inf", x_transf = TRUE, CI = TRUE,
   posterior.par <- round(c(l_bar, alpha, delta_bar, beta, mu),3)
   names(posterior.par) <- c("lambda", "alpha", "delta", "beta", "mu")
 
-  xi_post=ghyp::ghyp.ad(mu = mu, delta = delta_bar, alpha = g * sqrt(n),
-                        lambda = l_bar, beta = 0)
+  xi_post_par <- c(mu, delta_bar, g * sqrt(n), 0, l_bar)
   log_par<-matrix(nrow = 2, ncol = 5)
-  log_par[1,1]<-ghyp::ghyp.moment(xi_post, order = 1, central = F)
-  log_par[1,2]<-ghyp::ghyp.moment(xi_post, order = 2, central = T)
-  log_par[1,3:5]<-ghyp::qghyp(p = c(0.05, 0.5, 0.95), xi_post)
-  log_par[2,1]<-ghyp::Egig(lambda = l_bar, chi = delta_bar^2*n,psi = g^2, func = "x")
-  log_par[2,2]<-ghyp::Egig(lambda = l_bar, chi = delta_bar^2*n,psi = g^2, func = "var")
-  log_par[2,3:5]<-suppressWarnings(ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l_bar, chi = delta_bar^2*n,psi = g^2))
-  if(sum(is.na(log_par[2,3:5]))>0){
-    message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
-    sample_GIG<-ghyp::rgig(n=nrep, lambda = l_bar, chi = delta_bar^2*n,psi = g^2)
-    log_par[2,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
-  }
-   colnames(log_par)<-c("Mean","Var","p=0.05","p=0.50","p=0.95")
+  log_par[1,1]<-GeneralizedHyperbolic::ghypMean(param = xi_post_par)
+  log_par[1,2]<-GeneralizedHyperbolic::ghypVar(param = xi_post_par)
+  log_par[1,3:5]<- GeneralizedHyperbolic::qghyp(p = c(0.05, 0.5, 0.95), param = xi_post_par)
+  log_par[2,1]<-GeneralizedHyperbolic::gigMean(lambda = l_bar, chi = delta_bar^2*n,psi = g^2)
+  log_par[2,2]<-GeneralizedHyperbolic::gigVar(lambda = l_bar, chi = delta_bar^2*n,psi = g^2)
+  sample_GIG<-GeneralizedHyperbolic::rgig(n=nrep, lambda = l_bar, chi = delta_bar^2*n,psi = g^2)
+  log_par[2,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
+  colnames(log_par)<-c("Mean","Var","p=0.05","p=0.50","p=0.95")
   rownames(log_par)<-c("xi","sigma2")
 
 
@@ -97,19 +92,19 @@ LN_Mean <- function (x, method = "weak_inf", x_transf = TRUE, CI = TRUE,
                   Post_Estimates = as.matrix(data.frame(Mean=est, S.d.=sqrt(var)))))
   } else {
     if (type_CI == "two-sided") {
-      sample <- suppressWarnings(exp(ghyp::rghyp(n = nrep,object=ghyp::ghyp.ad(mu = mu, delta = delta_bar, alpha = alpha,
-                                                              lambda = l_bar, beta = beta))))
+      sample <- suppressWarnings(exp(GeneralizedHyperbolic::rghyp(n = nrep,mu = mu, delta = delta_bar, alpha = alpha,
+                                                              lambda = l_bar, beta = beta)))
       low <- quantile(x = sample, probs = alpha_CI / 2)
       up <- quantile(x = sample, probs = (1 - alpha_CI / 2))
     } else if (type_CI == "LCL") {
-      sample <- suppressWarnings(exp(ghyp::rghyp(n = nrep, object = ghyp::ghyp.ad(mu = mu, delta = delta_bar, alpha = alpha,
-                                                              lambda = l_bar, beta = beta))))
+      sample <- suppressWarnings(exp(GeneralizedHyperbolic::rghyp(n = nrep, mu = mu, delta = delta_bar, alpha = alpha,
+                                                              lambda = l_bar, beta = beta)))
       low <- quantile(x = sample, probs = alpha_CI)
       up <- Inf
     } else if (type_CI == "UCL") {
       low <- 0
-      sample <- suppressWarnings(exp(ghyp::rghyp(n = nrep, object=ghyp::ghyp.ad(mu = mu, delta = delta_bar, alpha = alpha,
-                                                              lambda = l_bar, beta = beta))))
+      sample <- suppressWarnings(exp(GeneralizedHyperbolic::rghyp(n = nrep, mu = mu, delta = delta_bar, alpha = alpha,
+                                                              lambda = l_bar, beta = beta)))
       up <- quantile(x = sample, probs = (1 - alpha_CI))
     } else {
       stop("type must be 'two-sided', 'LCL' or 'UCL'")
@@ -235,23 +230,19 @@ LN_MeanReg <- function(y, X, Xtilde, method = "weak_inf", y_transf=TRUE, h=NULL,
   V<-solve(t(X)%*%X)
 
   for(j in 1:nreg){
-    gen <- suppressWarnings(ghyp::rghyp(n = nrep, object = ghyp::ghyp.ad(lambda = l_bar,
+    gen <- suppressWarnings(GeneralizedHyperbolic::rghyp(n = nrep, lambda = l_bar,
                                                                          alpha = g / sqrt(diag(V)[j]), delta = sqrt(RSS + d^2)*sqrt(diag(V)[j]),
-                                                                         mu =  as.numeric(l_mod$coefficients[j]))))
+                                                                         mu =  as.numeric(l_mod$coefficients[j])))
     beta_post[j,1]<-mean(gen)
     beta_post[j,2]<-sd(gen)
     beta_post[j,3:7]<- quantile(gen, probs = c(0.025, 0.25, 0.5, 0.75, 0.975))
-    gen<-NULL
+    gen <- NULL
   }
-  sigma2<-matrix(nrow = 1, ncol = 5)
-  sigma2[1,1]<-ghyp::Egig(lambda = l_bar, chi = delta_bar^2/h,psi = g^2, func = "x")
-  sigma2[1,2]<-ghyp::Egig(lambda = l_bar, chi = delta_bar^2/h, psi = g^2, func = "var")
-  sigma2[1,3:5]<-suppressWarnings(ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l_bar, chi = delta_bar^2/h, psi = g^2))
-  if(sum(is.na(sigma2[1,3:5]))>0){
-    message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
-    sample_GIG<-ghyp::rgig(n=nrep, lambda = l_bar, chi = delta_bar^2/h, psi = g^2)
-    sigma2[1,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
-  }
+  sigma2 <- matrix(nrow = 1, ncol = 5)
+  sigma2[1,1] <- GeneralizedHyperbolic::gigMean(lambda = l_bar, chi = delta_bar^2/h, psi = g^2)
+  sigma2[1,2] <- GeneralizedHyperbolic::gigVar(lambda = l_bar, chi = delta_bar^2/h, psi = g^2)
+  sample_GIG<-GeneralizedHyperbolic::rgig(n=nrep, lambda = l_bar, chi = delta_bar^2/h, psi = g^2)
+  sigma2[1,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
 
   colnames(sigma2)<-c("Mean","Var","q5","q50","q95")
   rownames(sigma2)<-c("sigma2")
@@ -264,19 +255,19 @@ LN_MeanReg <- function(y, X, Xtilde, method = "weak_inf", y_transf=TRUE, h=NULL,
     up<-numeric(n_pred)
 for(i in 1:n_pred){
     if (type_CI == "two-sided") {
-      sample <-  suppressWarnings(exp(ghyp::rghyp(n = nrep,object=ghyp::ghyp.ad(mu = mu[i], delta = delta_bar, alpha = alpha,
-                                                              lambda = l_bar, beta = beta))))
+      sample <-  suppressWarnings(exp(GeneralizedHyperbolic::rghyp(n = nrep, mu = mu[i], delta = delta_bar, alpha = alpha,
+                                                              lambda = l_bar, beta = beta)))
       low[i] <- quantile(x = sample, probs = alpha_CI / 2)
       up[i] <- quantile(x = sample, probs = (1 - alpha_CI / 2))
     } else if (type_CI == "LCL") {
-      sample <-  suppressWarnings(exp(ghyp::rghyp(n = nrep, object = ghyp::ghyp.ad(mu = mu[i], delta = delta_bar, alpha = alpha,
-                                                                 lambda = l_bar, beta = beta))))
+      sample <-  suppressWarnings(exp(GeneralizedHyperbolic::rghyp(n = nrep, mu = mu[i], delta = delta_bar, alpha = alpha,
+                                                                 lambda = l_bar, beta = beta)))
       low[i] <- quantile(x = sample, probs = alpha_CI)
       up[i] <- Inf
     } else if (type_CI == "UCL") {
       low[i] <- 0
-      sample <- suppressWarnings(exp(ghyp::rghyp(n = nrep, object=ghyp::ghyp.ad(mu = mu[i], delta = delta_bar, alpha = alpha,
-                                                               lambda = l_bar, beta = beta))))
+      sample <- suppressWarnings(exp(GeneralizedHyperbolic::rghyp(n = nrep, mu = mu[i], delta = delta_bar, alpha = alpha,
+                                                               lambda = l_bar, beta = beta)))
       up[i] <- quantile(x = sample, probs = (1 - alpha_CI))
     } else {
       stop("type must be 'two-sided', 'LCL' or 'UCL'")

@@ -122,7 +122,7 @@ functional_delta <- function(x, n, quant, gamma, sigma2,lambda, nreg=1, rel_tol 
 #'data("EPA09")
 #'LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "optimal", CI = FALSE)
 #'LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "weak_inf",
-#'         alpha_CI = 0.05, type_CI = "UCL")
+#'         alpha_CI = 0.05, type_CI = "UCL", nrep_CI = 1e3) # increase nrep_CI
 #'
 #' @export
 
@@ -191,20 +191,15 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
   rownames(par) <- c("prior", "posterior")
 
   if(CI == FALSE){
-    xi_post=ghyp::ghyp.ad(mu = mu, delta = d, alpha = g,
-                          lambda = l, beta = 0)
-    log_par<-matrix(nrow = 2, ncol = 5)
-    log_par[1,1]<-ghyp::ghyp.moment(xi_post, order = 1, central = F)
-    log_par[1,2]<-ghyp::ghyp.moment(xi_post, order = 2, central = T)
-    log_par[1,3:5]<-ghyp::qghyp(p = c(0.05, 0.5, 0.95), xi_post)
-    log_par[2,1]<-ghyp::Egig(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2, func = "x")
-    log_par[2,2]<-ghyp::Egig(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2, func = "var")
-    log_par[2,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
-    if(sum(is.na(log_par[2,3:5]))>0){
-      message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
-      sample_GIG<-ghyp::rgig(n=nrep_CI, lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
-      log_par[2,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
-    }
+    xi_post_par <- c(mu, d, g, 0, l)# (mu, delta, alpha, beta, lambda)
+    log_par <- matrix(nrow = 2, ncol = 5)
+    log_par[1,1] <- GeneralizedHyperbolic::ghypMean(param = xi_post_par)
+    log_par[1,2] <- GeneralizedHyperbolic::ghypVar(param = xi_post_par)
+    log_par[1,3:5] <- GeneralizedHyperbolic::qghyp(p = c(0.05, 0.5, 0.95), param = xi_post_par)
+    log_par[2,1] <- GeneralizedHyperbolic::gigMean(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+    log_par[2,2] <- GeneralizedHyperbolic::gigVar(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+    sample_GIG <- GeneralizedHyperbolic::rgig(n = nrep_CI, lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+    log_par[2,3:5] <- quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
     colnames(log_par)<-c("Mean","Var","p=0.05","p=0.50","p=0.95")
     rownames(log_par)<-c("xi","sigma2")
     return(list(Quantile = quant, Parameters = par,
@@ -260,20 +255,15 @@ LN_Quant <- function(x, quant, method = "weak_inf", x_transf = TRUE, guess_s2 = 
     } else {
       stop("type_CI must be 'two-sided', 'LCL' or 'UCL'")
     }
-    xi_post=ghyp::ghyp.ad(mu = mu, delta = d, alpha = g,
-                          lambda = l, beta = 0)
+    xi_post_par <- c(mu, d, g, 0, l)# (mu, delta, alpha, beta, lambda)
     log_par<-matrix(nrow = 2, ncol = 5)
-    log_par[1,1]<-ghyp::ghyp.moment(xi_post, order = 1, central = F)
-    log_par[1,2]<-ghyp::ghyp.moment(xi_post, order = 2, central = T)
-    log_par[1,3:5]<-ghyp::qghyp(p = c(0.05, 0.5, 0.95), xi_post)
-    log_par[2,1]<-ghyp::Egig(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2, func = "x")
-    log_par[2,2]<-ghyp::Egig(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2, func = "var")
-    log_par[2,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
-    if(sum(is.na(log_par[2,3:5]))>0){
-      message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
-      sample_GIG<-ghyp::rgig(n=nrep_CI, lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
-      log_par[2,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
-    }
+    log_par[1,1] <- GeneralizedHyperbolic::ghypMean(param = xi_post_par)
+    log_par[1,2] <- GeneralizedHyperbolic::ghypVar(param = xi_post_par)
+    log_par[1,3:5] <- GeneralizedHyperbolic::qghyp(p = c(0.05, 0.5, 0.95), param = xi_post_par)
+    log_par[2,1] <- GeneralizedHyperbolic::gigMean(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+    log_par[2,2] <- GeneralizedHyperbolic::gigVar(lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+    sample_GIG <- GeneralizedHyperbolic::rgig(n = nrep_CI, lambda = l, chi = d^2*n,psi = (g/sqrt(n))^2)
+    log_par[2,3:5] <- quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
     colnames(log_par)<-c("Mean","Var","p=0.05","p=0.50","p=0.95")
     rownames(log_par)<-c("xi","sigma2")
     limits<- c(low, up)
@@ -451,25 +441,22 @@ LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL,
   V<-solve(t(X)%*%X)
 
   for(j in 1:nreg){
-    gen <- suppressWarnings(ghyp::rghyp(n = nrep_CI, object = ghyp::ghyp.ad(lambda = l,
-                                                        alpha = gamma / sqrt(diag(V)[j]), delta = sqrt(RSS + delta^2)*sqrt(diag(V)[j]),
-                                                        mu =  as.numeric(l_mod$coefficients[j]))))
+    gen <- suppressWarnings(GeneralizedHyperbolic::rghyp(n = nrep_CI, lambda = l,
+                                                         alpha = gamma / sqrt(diag(V)[j]),
+                                                         delta = sqrt(RSS + delta^2)*sqrt(diag(V)[j]),
+                                                         mu =  as.numeric(l_mod$coefficients[j])))
     beta_post[j,1]<-mean(gen)
     beta_post[j,2]<-sd(gen)
     beta_post[j,3:7]<- quantile(gen, probs = c(0.025, 0.25, 0.5, 0.75, 0.975))
     gen<-NULL
-}
+  }
 
   if(CI == FALSE){
     sigma2<-matrix(nrow = 1, ncol = 5)
-    sigma2[1,1]<-ghyp::Egig(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2, func = "x")
-    sigma2[1,2]<-ghyp::Egig(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2, func = "var")
-    sigma2[1,3:5]<-ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
-    if(sum(is.na(sigma2[1,3:5]))>0){
-      message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
-      sample_GIG<-ghyp::rgig(n=nrep_CI,  lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
-      sigma2[1,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
-    }
+    sigma2[1,1]<-GeneralizedHyperbolic::gigMean(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+    sigma2[1,2]<-GeneralizedHyperbolic::gigVar(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+    sample_GIG<-GeneralizedHyperbolic::rgig(n=nrep_CI,  lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+    sigma2[1,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
     colnames(sigma2)<-c("Mean","Var","q5","q50","q95")
     rownames(sigma2)<-c("sigma2")
     return(list(Quantile = quant, Parameters = par, Leverage = h, Sigma2=sigma2, Coefficients = beta_post, Post_Estimates = as.matrix(data.frame(Mean=est, S.d.=sqrt(var)))))
@@ -537,15 +524,10 @@ LN_QuantReg <- function(y, X, Xtilde, quant, method = "weak_inf", guess_s2=NULL,
     limits<- cbind(low, up)
     names(limits)<-c("Lower limit", "Upper limit")
     sigma2<-matrix(nrow = 1, ncol = 5)
-    sigma2[1,1]<-ghyp::Egig(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2, func = "x")
-    sigma2[1,2]<-ghyp::Egig(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2, func = "var")
-    sigma2[1,3:5]<-suppressWarnings(ghyp::qgig(p = c(0.05, 0.5, 0.95), lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2))
-    if(sum(is.na(sigma2[1,3:5]))>0){
-      message("An error occurred in fininding quantiles of the sigma2 posterior: computed using Monte Carlo")
-      sample_GIG<-ghyp::rgig(n=nrep_CI,  lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
-      sigma2[1,3:5]<-quantile(sample_GIG,probs = c(0.05, 0.5, 0.95))
-    }
-
+    sigma2[1,1]<-GeneralizedHyperbolic::gigMean(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+    sigma2[1,2]<-GeneralizedHyperbolic::gigVar(lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+    sample_GIG <- GeneralizedHyperbolic::rgig(n = nrep_CI,  lambda = l, chi = d^2/h,psi = (g*sqrt(h))^2)
+    sigma2[1,3:5] <- quantile(sample_GIG, probs = c(0.05, 0.5, 0.95))
     colnames(sigma2)<-c("Mean","Var","q5","q50","q95")
     rownames(sigma2)<-c("sigma2")
     return(list(Quantile = quant, Parameters = par, Sigma2=sigma2, Coefficients = beta_post,

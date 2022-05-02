@@ -203,7 +203,7 @@ rSMNG <- function(n, mu, delta, gamma, lambda, beta) {
     stop("delta must be positive")
   if (gamma <= 0)
     stop("gamma must be positive")
-  sigma2 <- ghyp::rgig(n = n, lambda = lambda, chi = delta ^ 2, psi = gamma ^ 2)
+  sigma2 <- GeneralizedHyperbolic::rgig(n = n, lambda = lambda, chi = delta ^ 2, psi = gamma ^ 2)
   s <- rnorm(n = n, mean = mu + beta * sqrt(sigma2), sd = sqrt(sigma2))
   return(s)
 }
@@ -436,10 +436,10 @@ SMNGZmoment <- function(j, mu, d, g, l, beta) {
     mom <- 1
   } else if(j %% 2 == 0){
     mom <- (2 * (d / g)) ^ (j / 2) * RatioBesselK(x = d * g, nu = l, nu_diff = j / 2) * (gamma(j / 2 + 0.5) / sqrt(pi)) *
-      Re(fAsianOptions::kummerM(x = - beta ^ 2 / 2, a = - j / 2, b = 0.5))
+      Re(gsl::hyperg_1F1(x = - beta ^ 2 / 2, a = - j / 2, b = 0.5))
   }else{
     mom <- beta * (2 * (d / g)) ^ (j / 2) * RatioBesselK(x = d * g, nu = l, nu_diff = j / 2) * ((sqrt(2) * gamma( j / 2 + 1)) / sqrt(pi))*
-      Re(fAsianOptions::kummerM(x = - beta ^ 2 / 2, a = 0.5 - j / 2, b = 1.5))
+      Re(gsl::hyperg_1F1(x = - beta ^ 2 / 2, a = 0.5 - j / 2, b = 1.5))
   }
   return(mom)
 }
