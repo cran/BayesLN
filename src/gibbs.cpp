@@ -112,7 +112,7 @@ Rcpp::List MCMC_alg(const Eigen::VectorXd y,
   int it=0;
   //time
   time_t now;
-
+  //
   //start sampling
   for(int k=0;k<nsamp;k++){
     /////////////////
@@ -199,7 +199,10 @@ Rcpp::List MCMC_alg(const Eigen::VectorXd y,
 
 
   return List::create(Named("beta") = beta_mc,
-                      Named("u") = gamma_mc, Named("tau2") = s2gamma_mc, Named("sigma2") = s2eps_mc);
+                      Named("u") = gamma_mc,
+  Named("tau2") = s2gamma_mc, Named("sigma2") = s2eps_mc);
+
+
 
 }
 

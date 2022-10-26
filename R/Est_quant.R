@@ -120,7 +120,8 @@ functional_delta <- function(x, n, quant, gamma, sigma2,lambda, nreg=1, rel_tol 
 #' @examples
 #'library(BayesLN)
 #'data("EPA09")
-#'LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "optimal", CI = FALSE)
+#' # The optimization algorithm might require time:
+#' # LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "optimal", CI = FALSE)
 #'LN_Quant(x = EPA09, x_transf = FALSE, quant = 0.95, method = "weak_inf",
 #'         alpha_CI = 0.05, type_CI = "UCL", nrep_CI = 1e3) # increase nrep_CI
 #'

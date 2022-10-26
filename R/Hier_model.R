@@ -210,12 +210,12 @@ LN_hierarchical <- function(formula_lme,
   Z <- NULL
   m <- numeric(s)
   for (i in 1:s) {
-    Zlist[[i]]<-Matrix::t(Zlist[[i]])
-    Zprovv<- as.matrix(Zlist[[i]])
+     Zlist[[i]]<-Matrix::t(Zlist[[i]])
+     Zprovv<- as.matrix(Zlist[[i]])
     m[i] <- dim(Zprovv)[2]
     colnames(Zprovv)<-paste(names(Zlist)[i],colnames(Zprovv), sep="_")
     Z <- cbind(Z, Zprovv)
-  }
+   }
   Zprovv <- NULL
   if(is.null(data_pred)){
     Xtilde <- X
@@ -304,11 +304,10 @@ LN_hierarchical <- function(formula_lme,
     } else{
       tau2_init <- inits[["tau2"]]
     }
-
+    X <- as.matrix(X)
       output <-   .Call(`_BayesLN_MCMC_alg`, y_log, X, Zlist, Precmat_Eff,
                        S_beta_pri, l_s, l_t, d_s, d_t, g_s, g_t, s,
                        nsamp, as.numeric(verbose), beta_init, sigma2_init, tau2_init)
-
       if ("PostPredictive" %in% functional){
         output[["yrep"]] <- .Call(`_BayesLN_post_pred`, output, Xtilde, Ztilde_list, s, nsamp)
         output$yrep <- exp(output$yrep)

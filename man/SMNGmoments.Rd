@@ -61,7 +61,7 @@ or in the infinite sum structure.
 \examples{
 
 ### Comparisons sample quantities vs true values
-sample <- rSMNG(n=1000000,mu = 0,delta = 2,gamma = 2,lambda = 1,beta = 2)
+sample <- rSMNG(n=50000,mu = 0,delta = 2,gamma = 2,lambda = 1,beta = 2)
 mean(sample)
 meanSMNG(mu = 0,delta = 2,gamma = 2,lambda = 1,beta = 2)
 

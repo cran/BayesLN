@@ -12,11 +12,23 @@
 
 <meta name="author" content="Aldo Gardini, Carlo Trivisano and Enrico Fabrizi" />
 
-<meta name="date" content="2022-05-02" />
+<meta name="date" content="2022-10-26" />
 
 <title>Bayesian Inference with Log-normal Data</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -26,6 +38,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -149,7 +162,187 @@ div.csl-indent {
 }
 </style>
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -161,121 +354,325 @@ div.csl-indent {
 
 
 
-<h1 class="title toc-ignore">Bayesian Inference with Log-normal Data</h1>
+<h1 class="title toc-ignore">Bayesian Inference with Log-normal
+Data</h1>
 <h4 class="author">Aldo Gardini, Carlo Trivisano and Enrico Fabrizi</h4>
-<h4 class="date">2022-05-02</h4>
+<h4 class="date">2022-10-26</h4>
 
 
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>Inference under the log-normal assumption for the data looks simple as parameters can be estimated taking the log- transform and then working with normality of the transformed data. Estimation of descriptors of the variable in question before transformation (such as median, mean, quantiles, variance, etc…) involve back-transformation can be critical as naive estimators can perform poorly. Here we focus on the estimation of a log-normal mean and quantiles and on the prediction of the conditional expectation in a lognormal linear and linear mixed models. In all these cases these estimates can be defined as functionals (involving the exp) of parameters estimated on log-transformed data. In the first place, back-transforming involves bias whenever the transformation is nonlinear, but this is not the only problem. In fact, one may suppose that this inferential issue is easily overcome in the Bayesian framework by sampling directly from the posterior distributions of the target functional, but there can be problems with the posteriors obtained assuming most of the priors popular in the analysis of normal data.</p>
-<p>If Bayes estimator under the quadratic loss function are to be considered (i.e., the posterior mean), the finiteness of the posterior moments must be assured at least up to the second order, to obtain the posterior variance too. The existence of such posterior moments, which is crucial to summarize the posterior distribution using squared loss, is often taken for granted, but this may not be the case for many prior choices. Furthermore, if estimation is performed through MCMC methods the non-existence of posterior moments cannot be easily detected.</p>
-<p>When an improper prior is fixed, a lot of care is usually taken in the properness of the posterior distribution. Even if the distribution is proper, it is not guaranteed that its moments are finite. This is the case with the Bayes estimators of log-normal functionals when the analysis is based on the choice of popular priors, both improper and proper (like the inverse gamma for the log-scale variance). For the estimation of the mean of a log-normal variable, this issue was first highlighted by <span class="citation">Zellner (1971)</span> and then the issues affecting the Bayesian estimation of the log-normal mean were faced by <span class="citation">Fabrizi and Trivisano (2012)</span> and <span class="citation">Fabrizi and Trivisano (2016)</span>, wherein the log-normal linear model was considered. The core of their proposal consists of specifying a generalized inverse Gaussian (GIG) prior for the variance in the log-scale <span class="math inline">\(\sigma^2\)</span>. In this way, existence conditions for the posterior moments of the target functionals to estimate were found and a careful inferential procedure in the Bayesian framework was proposed.</p>
-<p>Functions that allows to carry out Bayesian inference for important functionals under the log-normality assumption are included in the <code>BayesLN</code> package. With respect to the theory covered in Fabrizi and Trivisano (2012, 2016), the <code>BayesLN</code> package offers tools for the estimation of quantiles <span class="citation">(Gardini, Trivisano, and Fabrizi 2020)</span> and means under mixed models too.</p>
+<p>Inference under the log-normal assumption for the data looks simple
+as parameters can be estimated taking the log- transform and then
+working with normality of the transformed data. Estimation of
+descriptors of the variable in question before transformation (such as
+median, mean, quantiles, variance, etc…) involve back-transformation can
+be critical as naive estimators can perform poorly. Here we focus on the
+estimation of a log-normal mean and quantiles and on the prediction of
+the conditional expectation in a lognormal linear and linear mixed
+models. In all these cases these estimates can be defined as functionals
+(involving the exp) of parameters estimated on log-transformed data. In
+the first place, back-transforming involves bias whenever the
+transformation is nonlinear, but this is not the only problem. In fact,
+one may suppose that this inferential issue is easily overcome in the
+Bayesian framework by sampling directly from the posterior distributions
+of the target functional, but there can be problems with the posteriors
+obtained assuming most of the priors popular in the analysis of normal
+data.</p>
+<p>If Bayes estimator under the quadratic loss function are to be
+considered (i.e., the posterior mean), the finiteness of the posterior
+moments must be assured at least up to the second order, to obtain the
+posterior variance too. The existence of such posterior moments, which
+is crucial to summarize the posterior distribution using squared loss,
+is often taken for granted, but this may not be the case for many prior
+choices. Furthermore, if estimation is performed through MCMC methods
+the non-existence of posterior moments cannot be easily detected.</p>
+<p>When an improper prior is fixed, a lot of care is usually taken in
+the properness of the posterior distribution. Even if the distribution
+is proper, it is not guaranteed that its moments are finite. This is the
+case with the Bayes estimators of log-normal functionals when the
+analysis is based on the choice of popular priors, both improper and
+proper (like the inverse gamma for the log-scale variance). For the
+estimation of the mean of a log-normal variable, this issue was first
+highlighted by <span class="citation">Zellner (1971)</span> and then the
+issues affecting the Bayesian estimation of the log-normal mean were
+faced by <span class="citation">Fabrizi and Trivisano (2012)</span> and
+<span class="citation">Fabrizi and Trivisano (2016)</span>, wherein the
+log-normal linear model was considered. The core of their proposal
+consists of specifying a generalized inverse Gaussian (GIG) prior for
+the variance in the log-scale <span class="math inline">\(\sigma^2\)</span>. In this way, existence
+conditions for the posterior moments of the target functionals to
+estimate were found and a careful inferential procedure in the Bayesian
+framework was proposed.</p>
+<p>Functions that allows to carry out Bayesian inference for important
+functionals under the log-normality assumption are included in the
+<code>BayesLN</code> package. With respect to the theory covered in
+Fabrizi and Trivisano (2012, 2016), the <code>BayesLN</code> package
+offers tools for the estimation of quantiles <span class="citation">(Gardini, Trivisano, and Fabrizi 2020)</span> and means
+under mixed models too.</p>
 </div>
 <div id="some-theoretical-results" class="section level2">
 <h2>Some theoretical results</h2>
-<p>In this section, a brief overview of the theoretical problems are presented, followed by some key results, in order to motivate and describe the usefulness of the <code>R</code> functions implemented in the package.</p>
+<p>In this section, a brief overview of the theoretical problems are
+presented, followed by some key results, in order to motivate and
+describe the usefulness of the <code>R</code> functions implemented in
+the package.</p>
 <div id="model-with-only-fixed-effects" class="section level3">
 <h3>Model with only fixed effects</h3>
-<p>The conditional estimation problem is directly faced, since the unconditional case can be easily deduced as a special case.</p>
+<p>The conditional estimation problem is directly faced, since the
+unconditional case can be easily deduced as a special case.</p>
 <p>In this context, a random sample of size <span class="math inline">\(n\)</span> is observed: <span class="math display">\[\begin{equation*}
 (y_i,\mathbf{x}_i),\ i=1\dots n;
-\end{equation*}\]</span> where <span class="math inline">\(\mathbf{x}_i\)</span> is a vector containing the values of the <span class="math inline">\(p\)</span> covariates that are related to the <span class="math inline">\(i\)</span>-th unit. These vectors are stored as rows of the usual design matrix <span class="math inline">\(\mathbf{X}\in\mathbb{R}^{n\times p}\)</span>. Besides, the vector of the logarithmic transformation of the response variable is <span class="math inline">\(\mathbf{w}=\log(\mathbf{y})\)</span>. Finally, the following distributional assumption is fixed: <span class="math display">\[\begin{equation}\label{eq:ass_reg}
-y_i|\mathbf{x}_i,\boldsymbol{\beta},\sigma^2\sim \log\mathcal{N}\left(\mathbf{x}_i^T\boldsymbol{\beta},\sigma^2\right),\ i=1,\dots n,
-\end{equation}\]</span> where <span class="math inline">\(\boldsymbol{\beta}=(\beta_0,...,\beta_{p-1})\)</span> is the vector of coefficients.</p>
-<p>To complete the inferential setting, the improper flat prior is assumed for the regression coefficients and a generalized inverse Gaussian (GIG) prior is fixed for the variance in the log scale <span class="math inline">\(\sigma^2\)</span>: <span class="math display">\[\begin{align}
+\end{equation*}\]</span> where <span class="math inline">\(\mathbf{x}_i\)</span> is a vector containing the
+values of the <span class="math inline">\(p\)</span> covariates that are
+related to the <span class="math inline">\(i\)</span>-th unit. These
+vectors are stored as rows of the usual design matrix <span class="math inline">\(\mathbf{X}\in\mathbb{R}^{n\times p}\)</span>.
+Besides, the vector of the logarithmic transformation of the response
+variable is <span class="math inline">\(\mathbf{w}=\log(\mathbf{y})\)</span>. Finally, the
+following distributional assumption is fixed: <span class="math display">\[\begin{equation}\label{eq:ass_reg}
+y_i|\mathbf{x}_i,\boldsymbol{\beta},\sigma^2\sim
+\log\mathcal{N}\left(\mathbf{x}_i^T\boldsymbol{\beta},\sigma^2\right),\
+i=1,\dots n,
+\end{equation}\]</span> where <span class="math inline">\(\boldsymbol{\beta}=(\beta_0,...,\beta_{p-1})\)</span>
+is the vector of coefficients.</p>
+<p>To complete the inferential setting, the improper flat prior is
+assumed for the regression coefficients and a generalized inverse
+Gaussian (GIG) prior is fixed for the variance in the log scale <span class="math inline">\(\sigma^2\)</span>: <span class="math display">\[\begin{align}
 &amp;\boldsymbol{\beta}\propto 1,\\
-&amp;\sigma^2\sim GIG(\lambda, \delta, \gamma)\label{eq:priors_model_GIG};
-\end{align}\]</span> where <span class="math inline">\(\lambda\in \mathbb{R}\)</span>, <span class="math inline">\(\delta\in \mathbb{R}^+\)</span> and <span class="math inline">\(\gamma\in \mathbb{R}^+\)</span> are the hyperparameter to specify.</p>
-<p>The inferential questions that will be answered involve two basic functionals of the log-normal theory:</p>
+&amp;\sigma^2\sim GIG(\lambda, \delta,
+\gamma)\label{eq:priors_model_GIG};
+\end{align}\]</span> where <span class="math inline">\(\lambda\in
+\mathbb{R}\)</span>, <span class="math inline">\(\delta\in
+\mathbb{R}^+\)</span> and <span class="math inline">\(\gamma\in
+\mathbb{R}^+\)</span> are the hyperparameter to specify.</p>
+<p>The inferential questions that will be answered involve two basic
+functionals of the log-normal theory:</p>
 <ul>
-<li>the conditional mean at a given a point <span class="math inline">\(\tilde{\mathbf{x}}\in\mathbb{R}^{q}\)</span> of the covariate space:</li>
+<li>the conditional mean at a given a point <span class="math inline">\(\tilde{\mathbf{x}}\in\mathbb{R}^{q}\)</span> of
+the covariate space:</li>
 </ul>
 <p><span class="math display">\[\begin{equation}
-\theta_m(\tilde{\mathbf{x}})=\mathbb{E}\left[\tilde{y}|\tilde{\mathbf{x}}\right]=\exp\left\{\tilde{\mathbf{x}}^T\boldsymbol{\beta}+\frac{\sigma^2}{2} \right\};
-\end{equation}\]</span> and the function <code>LN_MeanReg()</code> allows to make inference on this quantity;</p>
+\theta_m(\tilde{\mathbf{x}})=\mathbb{E}\left[\tilde{y}|\tilde{\mathbf{x}}\right]=\exp\left\{\tilde{\mathbf{x}}^T\boldsymbol{\beta}+\frac{\sigma^2}{2}
+\right\};
+\end{equation}\]</span> and the function <code>LN_MeanReg()</code>
+allows to make inference on this quantity;</p>
 <ul>
-<li>the <span class="math inline">\(p\)</span>-th quantile at a given a point <span class="math inline">\(\tilde{\mathbf{x}}\in\mathbb{R}^{q}\)</span> of the covariate space:</li>
+<li>the <span class="math inline">\(p\)</span>-th quantile at a given a
+point <span class="math inline">\(\tilde{\mathbf{x}}\in\mathbb{R}^{q}\)</span> of
+the covariate space:</li>
 </ul>
 <p><span class="math display">\[\begin{equation}
-\theta_p(\tilde{\mathbf{x}})=\mathbb{Q}_p\left[\tilde{y}|\tilde{\mathbf{x}}\right]=\exp\left\{\tilde{\mathbf{x}}^T\boldsymbol{\beta}+\Phi^{-1}(p)\sigma \right\},
-\end{equation}\]</span> and the function <code>LN_QuantReg()</code> can be used to obtain posterior summaries for this quantity.</p>
-<p>It is possible to prove that the posterior moments of these functionals are finite up to order <span class="math inline">\(r\)</span> if the following conditions on the tail parameter <span class="math inline">\(\gamma\)</span> of the GIG prior holds.</p>
+\theta_p(\tilde{\mathbf{x}})=\mathbb{Q}_p\left[\tilde{y}|\tilde{\mathbf{x}}\right]=\exp\left\{\tilde{\mathbf{x}}^T\boldsymbol{\beta}+\Phi^{-1}(p)\sigma
+\right\},
+\end{equation}\]</span> and the function <code>LN_QuantReg()</code> can
+be used to obtain posterior summaries for this quantity.</p>
+<p>It is possible to prove that the posterior moments of these
+functionals are finite up to order <span class="math inline">\(r\)</span> if the following conditions on the tail
+parameter <span class="math inline">\(\gamma\)</span> of the GIG prior
+holds.</p>
 <ul>
-<li><span class="math inline">\(\mathbb{E}[\theta_m(\tilde{\mathbf{x}})^r|\mathbf{y}]&lt;\infty\)</span> if <span class="math inline">\(\gamma&gt;r+r^2\tilde{\mathbf{x}}^T(\mathbf{X}^T\mathbf{X})^{-1}\tilde{\mathbf{x}}\)</span>;</li>
-<li><span class="math inline">\(\mathbb{E}[\theta_p(\tilde{\mathbf{x}})^r|\mathbf{y}]&lt;\infty\)</span> if <span class="math inline">\(\gamma&gt;r^2\tilde{\mathbf{x}}^T(\mathbf{X}^T\mathbf{X})^{-1}\tilde{\mathbf{x}}\)</span>.</li>
+<li><span class="math inline">\(\mathbb{E}[\theta_m(\tilde{\mathbf{x}})^r|\mathbf{y}]&lt;\infty\)</span>
+if <span class="math inline">\(\gamma&gt;r+r^2\tilde{\mathbf{x}}^T(\mathbf{X}^T\mathbf{X})^{-1}\tilde{\mathbf{x}}\)</span>;</li>
+<li><span class="math inline">\(\mathbb{E}[\theta_p(\tilde{\mathbf{x}})^r|\mathbf{y}]&lt;\infty\)</span>
+if <span class="math inline">\(\gamma&gt;r^2\tilde{\mathbf{x}}^T(\mathbf{X}^T\mathbf{X})^{-1}\tilde{\mathbf{x}}\)</span>.</li>
 </ul>
-<p>In the proposed software implementation of the methodologies, the conditions on the parameter <span class="math inline">\(\gamma\)</span> are evaluated with <span class="math inline">\(r=3\)</span> to set the hyperparameter value, in order to assure the stable existence of the posterior variance.</p>
-<p>It is useful to remark that in case of unconditional estimation, the previous target quantities and the related conditions reduce to the following ones:</p>
+<p>In the proposed software implementation of the methodologies, the
+conditions on the parameter <span class="math inline">\(\gamma\)</span>
+are evaluated with <span class="math inline">\(r=3\)</span> to set the
+hyperparameter value, in order to assure the stable existence of the
+posterior variance.</p>
+<p>It is useful to remark that in case of unconditional estimation, the
+previous target quantities and the related conditions reduce to the
+following ones:</p>
 <ul>
-<li>The unconditional mean is <span class="math inline">\(\theta_m=\exp\{\beta_0+\frac{\sigma^2}{2}\}\)</span> and the moments are defined up to order <span class="math inline">\(r\)</span> if <span class="math inline">\(\gamma&gt;r+\frac{r^2}{n}\)</span>. The function <code>LN_Mean()</code> can be used for this particular case.</li>
-<li>The unconditional quantile is <span class="math inline">\(\theta_p=\exp\{\beta_0+\Phi^{-1}(p)\sigma\}\)</span>, the moments are defined up to order <span class="math inline">\(r\)</span> if <span class="math inline">\(\gamma&gt;\frac{r^2}{n}\)</span> and the function <code>LN_Quan()</code> can be used.</li>
+<li>The unconditional mean is <span class="math inline">\(\theta_m=\exp\{\beta_0+\frac{\sigma^2}{2}\}\)</span>
+and the moments are defined up to order <span class="math inline">\(r\)</span> if <span class="math inline">\(\gamma&gt;r+\frac{r^2}{n}\)</span>. The function
+<code>LN_Mean()</code> can be used for this particular case.</li>
+<li>The unconditional quantile is <span class="math inline">\(\theta_p=\exp\{\beta_0+\Phi^{-1}(p)\sigma\}\)</span>,
+the moments are defined up to order <span class="math inline">\(r\)</span> if <span class="math inline">\(\gamma&gt;\frac{r^2}{n}\)</span> and the function
+<code>LN_Quan()</code> can be used.</li>
 </ul>
-<p>The last aspect to determine is the hyperparameters specification. For all the <code>R</code> functions related to these quantities, two different strategies are proposed and can be selected through the <code>method</code> argument:</p>
+<p>The last aspect to determine is the hyperparameters specification.
+For all the <code>R</code> functions related to these quantities, two
+different strategies are proposed and can be selected through the
+<code>method</code> argument:</p>
 <ul>
-<li>If a weakly informative prior for the variance is desired, the (default) <code>&quot;weak_inf&quot;</code> option can be chosen. In this way, it has been proved that credibility intervals with good frequentist properties are obtained <span class="citation">(Fabrizi and Trivisano 2012)</span>.</li>
-<li>If the point estimation is desired, optimal-MSE procedures are implemented too and can be set using the <code>&quot;optimal&quot;</code> option. For details of the setting related to the mean estimation process see <span class="citation">Fabrizi and Trivisano (2012)</span> and <span class="citation">Fabrizi and Trivisano (2016)</span>. For quantiles a numerical procedure is called.</li>
+<li>If a weakly informative prior for the variance is desired, the
+(default) <code>&quot;weak_inf&quot;</code> option can be chosen. In this way, it
+has been proved that credibility intervals with good frequentist
+properties are obtained <span class="citation">(Fabrizi and Trivisano
+2012)</span>.</li>
+<li>If the point estimation is desired, optimal-MSE procedures are
+implemented too and can be set using the <code>&quot;optimal&quot;</code> option.
+For details of the setting related to the mean estimation process see
+<span class="citation">Fabrizi and Trivisano (2012)</span> and <span class="citation">Fabrizi and Trivisano (2016)</span>. For quantiles a
+numerical procedure is called.</li>
 </ul>
 </div>
 <div id="conditional-means-estimation-under-linear-mixed-models" class="section level3">
 <h3>Conditional means estimation under linear mixed models</h3>
-<p>In this case we are considering a vector of responses <span class="math inline">\(\mathbf{y}\in\mathbb{R}^n\)</span> and the assumption of log-normality for the response means analysing the log-transformed vector <span class="math inline">\(\mathbf{w}=\log \mathbf{y}\)</span> as normally distributed. The classical formulation of the model is: <span class="math display">\[\begin{equation}
-\mathbf{w}= \mathbf{X}\boldsymbol{\beta}+\mathbf{Zu}+\boldsymbol{\varepsilon}.
-\end{equation}\]</span> The coefficients of the fixed effects are in the vector <span class="math inline">\(\boldsymbol{\beta}\in\mathbb{R}^p\)</span>, whereas <span class="math inline">\(\mathbf{u}\in\mathbb{R}^m\)</span> is the vector of random effects and <span class="math inline">\(\boldsymbol{\varepsilon}\in\mathbb{R}^{n}\)</span> is the vector of residuals. The design matrices are <span class="math inline">\(\mathbf{X}\in\mathbb{R}^{n\times p}\)</span>, that is assumed to be full rank in order to guarantee the existence of <span class="math inline">\((\mathbf{X}^T\mathbf{X})^{-1}\)</span>, and <span class="math inline">\(\mathbf{Z}\in\mathbb{R}^{n\times m}\)</span>. The following Bayesian hierarchical model is studied:</p>
+<p>In this case we are considering a vector of responses <span class="math inline">\(\mathbf{y}\in\mathbb{R}^n\)</span> and the
+assumption of log-normality for the response means analysing the
+log-transformed vector <span class="math inline">\(\mathbf{w}=\log
+\mathbf{y}\)</span> as normally distributed. The classical formulation
+of the model is: <span class="math display">\[\begin{equation}
+\mathbf{w}=
+\mathbf{X}\boldsymbol{\beta}+\mathbf{Zu}+\boldsymbol{\varepsilon}.
+\end{equation}\]</span> The coefficients of the fixed effects are in the
+vector <span class="math inline">\(\boldsymbol{\beta}\in\mathbb{R}^p\)</span>,
+whereas <span class="math inline">\(\mathbf{u}\in\mathbb{R}^m\)</span>
+is the vector of random effects and <span class="math inline">\(\boldsymbol{\varepsilon}\in\mathbb{R}^{n}\)</span>
+is the vector of residuals. The design matrices are <span class="math inline">\(\mathbf{X}\in\mathbb{R}^{n\times p}\)</span>, that
+is assumed to be full rank in order to guarantee the existence of <span class="math inline">\((\mathbf{X}^T\mathbf{X})^{-1}\)</span>, and <span class="math inline">\(\mathbf{Z}\in\mathbb{R}^{n\times m}\)</span>. The
+following Bayesian hierarchical model is studied:</p>
 <p><span class="math display">\[\begin{equation}\label{eq:mod_mix}
 \begin{aligned}
-&amp;\mathbf{w}|\mathbf{u}, \boldsymbol{\beta}, \sigma^2\sim \mathcal{N}_n\left(\mathbf{X}\boldsymbol{\beta}+\mathbf{Zu}, \mathbf{I}_n\sigma^2 \right);\\
-&amp;\mathbf{u}|\tau^2_1,...,\tau^2_q\sim\mathcal{N}_m\left(\mathbf{0}, \mathbf{D}\right),\  \mathbf{D}=\oplus^q_{s=1}\mathbf{I}_{m_s}\tau_s^2;\\
+&amp;\mathbf{w}|\mathbf{u}, \boldsymbol{\beta}, \sigma^2\sim
+\mathcal{N}_n\left(\mathbf{X}\boldsymbol{\beta}+\mathbf{Zu},
+\mathbf{I}_n\sigma^2 \right);\\
+&amp;\mathbf{u}|\tau^2_1,...,\tau^2_q\sim\mathcal{N}_m\left(\mathbf{0},
+\mathbf{D}\right),\  \mathbf{D}=\oplus^q_{s=1}\mathbf{I}_{m_s}\tau_s^2;\\
 &amp;(\boldsymbol{\beta},\sigma^2)\sim p(\boldsymbol{\beta},\sigma^2);\\
 &amp;\boldsymbol{\tau}^2\sim p(\tau_1^2,...,\tau_q^2).
 \end{aligned}
 \end{equation}\]</span></p>
-<p>Since <span class="math inline">\(q\)</span> random factors are considered, <span class="math inline">\(q\)</span> different variances related to the random components <span class="math inline">\(\boldsymbol{\tau}^2=(\tau^2_1,...,\tau^2_q)\)</span> are included in the model. Therefore, it is possible to split the vector of random effects in <span class="math inline">\(\mathbf{u}=[\mathbf{u}_1^T,...,\mathbf{u}_s^T,...,\mathbf{u}_q^T]^T\)</span>, where <span class="math inline">\(\mathbf{u}_s\in\mathbb{R}^{m_s}\)</span> with <span class="math inline">\(\sum_{s=1}^q m_s=m\)</span>. The design matrix of the random effects might be partitioned too: <span class="math inline">\(\mathbf{Z}=[\mathbf{Z}_1\cdots \mathbf{Z}_s\cdots\mathbf{Z}_q]\)</span>.</p>
-<p>The function <code>LN_hierarchical()</code> allows the user to make inference on the desired log-normal linear mixed model by sampling from the posterior distributions through a Gibbs sampler. The model equation need to be given to the <code>formula_lme</code> argument using the same syntax as the <code>lmer()</code> function of the <code>lme4</code> package <span class="citation">(Bates et al. 2015)</span>.</p>
-<p>In practice, the interpretable outputs are usually provided in the original data scale, back-transforming the results obtained estimating the previous model. Exploiting the properties of the log-normal distribution, the following quantities can be of interest:</p>
+<p>Since <span class="math inline">\(q\)</span> random factors are
+considered, <span class="math inline">\(q\)</span> different variances
+related to the random components <span class="math inline">\(\boldsymbol{\tau}^2=(\tau^2_1,...,\tau^2_q)\)</span>
+are included in the model. Therefore, it is possible to split the vector
+of random effects in <span class="math inline">\(\mathbf{u}=[\mathbf{u}_1^T,...,\mathbf{u}_s^T,...,\mathbf{u}_q^T]^T\)</span>,
+where <span class="math inline">\(\mathbf{u}_s\in\mathbb{R}^{m_s}\)</span> with
+<span class="math inline">\(\sum_{s=1}^q m_s=m\)</span>. The design
+matrix of the random effects might be partitioned too: <span class="math inline">\(\mathbf{Z}=[\mathbf{Z}_1\cdots
+\mathbf{Z}_s\cdots\mathbf{Z}_q]\)</span>.</p>
+<p>The function <code>LN_hierarchical()</code> allows the user to make
+inference on the desired log-normal linear mixed model by sampling from
+the posterior distributions through a Gibbs sampler. The model equation
+need to be given to the <code>formula_lme</code> argument using the same
+syntax as the <code>lmer()</code> function of the <code>lme4</code>
+package <span class="citation">(Bates et al. 2015)</span>.</p>
+<p>In practice, the interpretable outputs are usually provided in the
+original data scale, back-transforming the results obtained estimating
+the previous model. Exploiting the properties of the log-normal
+distribution, the following quantities can be of interest:</p>
 <ul>
-<li>the conditioned expectation of the observation <span class="math inline">\(\tilde{y}\)</span> given the random effects and the covariate patterns <span class="math inline">\(\tilde{\mathbf{x}},\ \tilde{\mathbf{z}}\)</span> (quantity that could be also labelled as subject-specific expectation). It is defined as:</li>
+<li>the conditioned expectation of the observation <span class="math inline">\(\tilde{y}\)</span> given the random effects and
+the covariate patterns <span class="math inline">\(\tilde{\mathbf{x}},\
+\tilde{\mathbf{z}}\)</span> (quantity that could be also labelled as
+subject-specific expectation). It is defined as:</li>
 </ul>
 <p><span class="math display">\[\begin{equation}
-\theta_c(\tilde{\mathbf{x}},\tilde{\mathbf{z}})=\mathbb{E}\left[\tilde{y}|\mathbf{u},\tilde{\mathbf{x}},\tilde{\mathbf{z}}\right]=\exp\left\{\tilde{\mathbf{x}}^T\boldsymbol{\beta}+\tilde{\mathbf{z}}^T\mathbf{u}+\frac{\sigma^2}{2} \right\},
+\theta_c(\tilde{\mathbf{x}},\tilde{\mathbf{z}})=\mathbb{E}\left[\tilde{y}|\mathbf{u},\tilde{\mathbf{x}},\tilde{\mathbf{z}}\right]=\exp\left\{\tilde{\mathbf{x}}^T\boldsymbol{\beta}+\tilde{\mathbf{z}}^T\mathbf{u}+\frac{\sigma^2}{2}
+\right\},
 \end{equation}\]</span></p>
 <ul>
-<li>if the random effects are ignored and they are integrated out, then the conditioned expectation of interest is:</li>
+<li>if the random effects are ignored and they are integrated out, then
+the conditioned expectation of interest is:</li>
 </ul>
 <p><span class="math display">\[\begin{equation}\label{eq:avg_marg}
-\theta_m(\tilde{\mathbf{x}})=\mathbb{E}\left[\tilde{y}|\tilde{\mathbf{x}}\right]=\exp\left\{\tilde{\mathbf{x}}^T\boldsymbol{\beta}+\frac{1}{2}\left(\sigma^2+\sum_{s=1}^q \tau_s^2\right) \right\};
+\theta_m(\tilde{\mathbf{x}})=\mathbb{E}\left[\tilde{y}|\tilde{\mathbf{x}}\right]=\exp\left\{\tilde{\mathbf{x}}^T\boldsymbol{\beta}+\frac{1}{2}\left(\sigma^2+\sum_{s=1}^q
+\tau_s^2\right) \right\};
 \end{equation}\]</span></p>
 <ul>
-<li>the posterior predictive distribution <span class="math inline">\(p(\tilde{y}|\mathbf{y})\)</span> and its posterior moments is a further quantity that might be investigated.</li>
+<li>the posterior predictive distribution <span class="math inline">\(p(\tilde{y}|\mathbf{y})\)</span> and its posterior
+moments is a further quantity that might be investigated.</li>
 </ul>
-<p>The argument <code>functional</code> of the <code>LN_hierarchical()</code> function let the user specify the kind of functionals for which the posterior distribution is of interest: the posterior of <span class="math inline">\(\theta_c(\tilde{\mathbf{x}},\tilde{\mathbf{z}})\)</span> is obtained by specifying <code>&quot;Subject&quot;</code>, <span class="math inline">\(\theta_m(\tilde{\mathbf{x}})\)</span> with <code>&quot;Marginal&quot;</code> and the posterior predictive distribution with <code>&quot;PostPredictive&quot;</code>. Moreover, the argument <code>data_pred</code> allow to provide a data frame containing the desired covariate points for which the target quantities need to be computed.</p>
-<p>As in the previous section, independent GIG priors are adopted for the variance components: <span class="math display">\[\begin{equation}
-p(\sigma^2)\sim GIG(\lambda_\sigma,\delta_\sigma,\gamma_\sigma);\ \ p(\tau_s^2)\sim GIG(\lambda_{\tau,s},\delta_{\tau,s} ,\gamma_{\tau,s}),\ \forall s.
-\end{equation}\]</span> Moreover, it is possible to prove that the tail parameter <span class="math inline">\(\gamma\)</span> is involved again in the existence conditions for the posterior moments of the target quantities defined above. In particular:</p>
+<p>The argument <code>functional</code> of the
+<code>LN_hierarchical()</code> function let the user specify the kind of
+functionals for which the posterior distribution is of interest: the
+posterior of <span class="math inline">\(\theta_c(\tilde{\mathbf{x}},\tilde{\mathbf{z}})\)</span>
+is obtained by specifying <code>&quot;Subject&quot;</code>, <span class="math inline">\(\theta_m(\tilde{\mathbf{x}})\)</span> with
+<code>&quot;Marginal&quot;</code> and the posterior predictive distribution with
+<code>&quot;PostPredictive&quot;</code>. Moreover, the argument
+<code>data_pred</code> allow to provide a data frame containing the
+desired covariate points for which the target quantities need to be
+computed.</p>
+<p>As in the previous section, independent GIG priors are adopted for
+the variance components: <span class="math display">\[\begin{equation}
+p(\sigma^2)\sim GIG(\lambda_\sigma,\delta_\sigma,\gamma_\sigma);\ \
+p(\tau_s^2)\sim GIG(\lambda_{\tau,s},\delta_{\tau,s} ,\gamma_{\tau,s}),\
+\forall s.
+\end{equation}\]</span> Moreover, it is possible to prove that the tail
+parameter <span class="math inline">\(\gamma\)</span> is involved again
+in the existence conditions for the posterior moments of the target
+quantities defined above. In particular:</p>
 <ul>
-<li><span class="math inline">\(\mathbb{E}\left[\theta_c^r(\tilde{\mathbf{x}},\tilde{\mathbf{z}})|\mathbf{w}\right]\)</span> exists if <span class="math inline">\(\gamma_{\sigma}^2&gt;r+r^2\tilde{\mathbf{x}}^T\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\tilde{\mathbf{x}}\)</span>;</li>
-<li><span class="math inline">\(\mathbb{E}\left[\theta_m^r(\tilde{\mathbf{x}})|\mathbf{w}\right]\)</span> exists if <span class="math inline">\(\gamma_{\sigma}^2&gt;r+r^2\tilde{\mathbf{x}}^T\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\tilde{\mathbf{x}}\)</span> and <span class="math inline">\(\gamma^2_{\tau,s}&gt;r+r^2\tilde{\mathbf{x}}_{o}^T\mathbf{L}_s\tilde{\mathbf{x}}_{o},\ \forall s\)</span>;</li>
-<li><span class="math inline">\(\mathbb{E}\left[\tilde{y}^r|\mathbf{y}\right]\)</span> exists if <span class="math inline">\(\gamma_{\sigma}^2&gt;r^2+r^2\tilde{\mathbf{x}}^T\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\tilde{\mathbf{x}}\)</span>.</li>
+<li><span class="math inline">\(\mathbb{E}\left[\theta_c^r(\tilde{\mathbf{x}},\tilde{\mathbf{z}})|\mathbf{w}\right]\)</span>
+exists if <span class="math inline">\(\gamma_{\sigma}^2&gt;r+r^2\tilde{\mathbf{x}}^T\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\tilde{\mathbf{x}}\)</span>;</li>
+<li><span class="math inline">\(\mathbb{E}\left[\theta_m^r(\tilde{\mathbf{x}})|\mathbf{w}\right]\)</span>
+exists if <span class="math inline">\(\gamma_{\sigma}^2&gt;r+r^2\tilde{\mathbf{x}}^T\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\tilde{\mathbf{x}}\)</span>
+and <span class="math inline">\(\gamma^2_{\tau,s}&gt;r+r^2\tilde{\mathbf{x}}_{o}^T\mathbf{L}_s\tilde{\mathbf{x}}_{o},\
+\forall s\)</span>;</li>
+<li><span class="math inline">\(\mathbb{E}\left[\tilde{y}^r|\mathbf{y}\right]\)</span>
+exists if <span class="math inline">\(\gamma_{\sigma}^2&gt;r^2+r^2\tilde{\mathbf{x}}^T\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\tilde{\mathbf{x}}\)</span>.</li>
 </ul>
-<p>If the first and the latter conditions are equal to the ones stated in the previous section and only the tail parameter of the prior for <span class="math inline">\(\sigma^2\)</span> is involved, the existence condition for the posterior moments of <span class="math inline">\(\theta_m(\tilde{\mathbf{x}})\)</span> requires a constraint on <span class="math inline">\(\gamma_{\tau,s}\)</span> too. This expression is function of the the matrix <span class="math inline">\(\mathbf{L}_s\in\mathbb{R}^{p\times p}\)</span>: its entries are all 0s with the exception of the first <span class="math inline">\(l \times l\)</span> square block <span class="math inline">\(\mathbf{L}_{s;1,1}\)</span>, where <span class="math inline">\(l=p-\text{rank}\{ \mathbf{X}^T\left(\mathbf{I}-\mathbf{P_Z} \right)\mathbf{X}\}\)</span>. It coincides with the number of variables of <span class="math inline">\(\mathbf{X}\)</span> that are included in <span class="math inline">\(\mathbf{Z}\)</span> too. Furthermore, to simplify the final form of the result, it is useful to place the columns related to these variables as first <span class="math inline">\(l\)</span> columns of the  <span class="math inline">\(\mathbf{X}_o\)</span>, without loss of generality. As a consequence, the matrix <span class="math inline">\(\mathbf{L}_{s;1,1}\)</span> coincides with the inverse of the upper left <span class="math inline">\(l \times l\)</span> block on the diagonal of the matrix <span class="math inline">\(\mathbf{X}_o^T\left(\mathbf{Z}(\mathbf{Z}^T\mathbf{Z})^{-}\mathbf{C}_s (\mathbf{Z}^T\mathbf{Z})^{-}\mathbf{Z}^T\right)\mathbf{X}_o\)</span>, where <span class="math inline">\(\mathbf{C}_s\)</span> is the null matrix with the exception of <span class="math inline">\(\mathbf{I}_{m_s}\)</span> as block on the diagonal in correspondence to the <span class="math inline">\(s\)</span>-th variance component of the random effect. To complete the notation, <span class="math inline">\(\tilde{\mathbf{x}}_{o}\)</span> is the covariate pattern of the observation to estimate that is ordered coherently with respect to <span class="math inline">\(\mathbf{X}_o\)</span>.</p>
-<p>Because of the non-intuitive expressions of the existence conditions, the function <code>LN_hier_existence()</code> is implemented to compute them. This routine is called by the function <code>LN_hierarchical()</code> to fix the values of the hyperparameters in order to fulfil the more restrictive existence condition for the functionals of interest, if the default priors are desired. To specify different priors, the arguments <code>par_tau</code> and <code>par_sigma</code> can be used.</p>
-<p>Otherwise, if the proposed prior specification is adopted, the key concepts of the strategy can be synthesized as follows:</p>
+<p>If the first and the latter conditions are equal to the ones stated
+in the previous section and only the tail parameter of the prior for
+<span class="math inline">\(\sigma^2\)</span> is involved, the existence
+condition for the posterior moments of <span class="math inline">\(\theta_m(\tilde{\mathbf{x}})\)</span> requires a
+constraint on <span class="math inline">\(\gamma_{\tau,s}\)</span> too.
+This expression is function of the the matrix <span class="math inline">\(\mathbf{L}_s\in\mathbb{R}^{p\times p}\)</span>:
+its entries are all 0s with the exception of the first <span class="math inline">\(l \times l\)</span> square block <span class="math inline">\(\mathbf{L}_{s;1,1}\)</span>, where <span class="math inline">\(l=p-\text{rank}\{
+\mathbf{X}^T\left(\mathbf{I}-\mathbf{P_Z} \right)\mathbf{X}\}\)</span>.
+It coincides with the number of variables of <span class="math inline">\(\mathbf{X}\)</span> that are included in <span class="math inline">\(\mathbf{Z}\)</span> too. Furthermore, to simplify
+the final form of the result, it is useful to place the columns related
+to these variables as first <span class="math inline">\(l\)</span>
+columns of the <span class="math inline">\(\mathbf{X}_o\)</span>,
+without loss of generality. As a consequence, the matrix <span class="math inline">\(\mathbf{L}_{s;1,1}\)</span> coincides with the
+inverse of the upper left <span class="math inline">\(l \times
+l\)</span> block on the diagonal of the matrix <span class="math inline">\(\mathbf{X}_o^T\left(\mathbf{Z}(\mathbf{Z}^T\mathbf{Z})^{-}\mathbf{C}_s
+(\mathbf{Z}^T\mathbf{Z})^{-}\mathbf{Z}^T\right)\mathbf{X}_o\)</span>,
+where <span class="math inline">\(\mathbf{C}_s\)</span> is the null
+matrix with the exception of <span class="math inline">\(\mathbf{I}_{m_s}\)</span> as block on the diagonal
+in correspondence to the <span class="math inline">\(s\)</span>-th
+variance component of the random effect. To complete the notation, <span class="math inline">\(\tilde{\mathbf{x}}_{o}\)</span> is the covariate
+pattern of the observation to estimate that is ordered coherently with
+respect to <span class="math inline">\(\mathbf{X}_o\)</span>.</p>
+<p>Because of the non-intuitive expressions of the existence conditions,
+the function <code>LN_hier_existence()</code> is implemented to compute
+them. This routine is called by the function
+<code>LN_hierarchical()</code> to fix the values of the hyperparameters
+in order to fulfil the more restrictive existence condition for the
+functionals of interest, if the default priors are desired. To specify
+different priors, the arguments <code>par_tau</code> and
+<code>par_sigma</code> can be used.</p>
+<p>Otherwise, if the proposed prior specification is adopted, the key
+concepts of the strategy can be synthesized as follows:</p>
 <ul>
-<li>the hyperparameters of all the priors are the same, to preserve the prior balance among the different variance components;</li>
-<li>as tail parameter <span class="math inline">\(\gamma\)</span>, the more restrictive condition is evaluated replacing <span class="math inline">\(r\)</span> with the specified <code>order_moment</code> (default 2) plus 1;</li>
-<li>to obtain uniform marginal priors for the intraclass correlation coefficients, it is fixed <span class="math inline">\(\lambda=1\)</span> and <span class="math inline">\(\delta=\varepsilon=0.01\)</span>.</li>
+<li>the hyperparameters of all the priors are the same, to preserve the
+prior balance among the different variance components;</li>
+<li>as tail parameter <span class="math inline">\(\gamma\)</span>, the
+more restrictive condition is evaluated replacing <span class="math inline">\(r\)</span> with the specified
+<code>order_moment</code> (default 2) plus 1;</li>
+<li>to obtain uniform marginal priors for the intraclass correlation
+coefficients, it is fixed <span class="math inline">\(\lambda=1\)</span>
+and <span class="math inline">\(\delta=\varepsilon=0.01\)</span>.</li>
 </ul>
 </div>
 </div>
 <div id="real-data-applications" class="section level2">
 <h2>Real data applications</h2>
-<p>To show how the functions of the package work and to briefly illustrate the produced outputs, some real data application are presented in this section.</p>
+<p>To show how the functions of the package work and to briefly
+illustrate the produced outputs, some real data application are
+presented in this section.</p>
 <div id="unconditional-estimation" class="section level3">
 <h3>Unconditional estimation</h3>
-<p>In environmental monitoring, it is common to deal with small datasets containing observations of pollutant concentrations and for which the log-normality assumption appears to be appropriate. In these applications, it is important to provide both point estimates and intervals, that constitutes the so-called confidence limits. A popular example included in <span class="citation">USEPA (2009)</span> is faced: it consists of a small sample (<span class="math inline">\(n=8\)</span>) of chrysene concentrations (ppb) obtained from two background wells. The vector of observations is already included in the package and is named <code>EPA09</code>.</p>
-<p>First, the mean estimation problem is faced and the function <code>LN_Mean()</code> is used. If a point estimate is desired, the advise is to use the <code>&quot;optimal&quot;</code> prior setting. Since the observations are not already log-transformed, the argument <code>x_transf</code> is set as <code>FALSE</code>.</p>
+<p>In environmental monitoring, it is common to deal with small datasets
+containing observations of pollutant concentrations and for which the
+log-normality assumption appears to be appropriate. In these
+applications, it is important to provide both point estimates and
+intervals, that constitutes the so-called confidence limits. A popular
+example included in <span class="citation">USEPA (2009)</span> is faced:
+it consists of a small sample (<span class="math inline">\(n=8\)</span>)
+of chrysene concentrations (ppb) obtained from two background wells. The
+vector of observations is already included in the package and is named
+<code>EPA09</code>.</p>
+<p>First, the mean estimation problem is faced and the function
+<code>LN_Mean()</code> is used. If a point estimate is desired, the
+advise is to use the <code>&quot;optimal&quot;</code> prior setting. Since the
+observations are not already log-transformed, the argument
+<code>x_transf</code> is set as <code>FALSE</code>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load dataset</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;EPA09&quot;</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -292,13 +689,33 @@ p(\sigma^2)\sim GIG(\lambda_\sigma,\delta_\sigma,\gamma_\sigma);\ \ p(\tau_s^2)\
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean         Var    p=0.05    p=0.50    p=0.95</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.025427261 2.2479885 2.5085773 2.7691661</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.2034181 0.006442247 0.1088293 0.1864138 0.3509163</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.2034181 0.006442247 0.1087473 0.1865454 0.3545405</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Mean     S.d.</span></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 13.79142 2.352631</span></span></code></pre></div>
-<p>The output reports the prior parameters for the variance <span class="math inline">\(\sigma^2\sim GIG(\lambda, \delta, \gamma)\)</span> and the 5 parameters that characterize the posterior distribution of the log-normal mean <span class="math inline">\(\theta_m\)</span>, i.e. a Generalized Hyperbolic distribution (see <span class="citation">Fabrizi and Trivisano (2012)</span> for more methodological details). Then, the basic summaries of the posterior distributions of the log-normal parameters are reported (<code>xi</code> is the log-scale mean and <code>sigma2</code> the log-scale variance). Finally, the posterior mean <span class="math inline">\(\mathbb{E}[\theta_m|\mathbf{y}]\)</span> and the posterior standard deviation of the target quantity are reported (note that these values are obtained in closed form, without MC simulations).</p>
-<p>On the other hand, if the interval estimate is required, it is advisable to use the weakly informative (<code>&quot;weak_inf&quot;</code>) prior setting, specify the desired credibility level <code>alpha_CI</code> and select the type of interval: it is possible to obtain as output the usual two sided interval (<code>&quot;two-sided&quot;</code>), the lower credible limit (<code>&quot;LCL&quot;</code>) and the upper credible limit (<code>&quot;UCL&quot;</code>). The last two interval kinds are often required in environmental problems to estimate pollutants legal limits. For example, the <span class="math inline">\(95\%\)</span> UCL can be estimated as follows.</p>
+<p>The output reports the prior parameters for the variance <span class="math inline">\(\sigma^2\sim GIG(\lambda, \delta, \gamma)\)</span>
+and the 5 parameters that characterize the posterior distribution of the
+log-normal mean <span class="math inline">\(\theta_m\)</span>, i.e. a
+Generalized Hyperbolic distribution (see <span class="citation">Fabrizi
+and Trivisano (2012)</span> for more methodological details). Then, the
+basic summaries of the posterior distributions of the log-normal
+parameters are reported (<code>xi</code> is the log-scale mean and
+<code>sigma2</code> the log-scale variance). Finally, the posterior mean
+<span class="math inline">\(\mathbb{E}[\theta_m|\mathbf{y}]\)</span> and
+the posterior standard deviation of the target quantity are reported
+(note that these values are obtained in closed form, without MC
+simulations).</p>
+<p>On the other hand, if the interval estimate is required, it is
+advisable to use the weakly informative (<code>&quot;weak_inf&quot;</code>) prior
+setting, specify the desired credibility level <code>alpha_CI</code> and
+select the type of interval: it is possible to obtain as output the
+usual two sided interval (<code>&quot;two-sided&quot;</code>), the lower credible
+limit (<code>&quot;LCL&quot;</code>) and the upper credible limit
+(<code>&quot;UCL&quot;</code>). The last two interval kinds are often required in
+environmental problems to estimate pollutants legal limits. For example,
+the <span class="math inline">\(95\%\)</span> UCL can be estimated as
+follows.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">LN_Mean</span>(<span class="at">x =</span> EPA09, <span class="at">x_transf =</span> <span class="cn">FALSE</span>, <span class="at">method =</span> <span class="st">&quot;weak_inf&quot;</span>, <span class="at">alpha_CI =</span> <span class="fl">0.05</span>, <span class="at">type_CI =</span> <span class="st">&quot;UCL&quot;</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Prior_Parameters</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lambda  delta  gamma </span></span>
@@ -311,7 +728,7 @@ p(\sigma^2)\sim GIG(\lambda_\sigma,\delta_\sigma,\gamma_\sigma);\ \ p(\tau_s^2)\
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
 <span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean        Var    p=0.05    p=0.50    p=0.95</span></span>
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.04906591 2.1479285 2.5085773 2.8692261</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3925273 0.03930270 0.1737533 0.3451112 0.7716508</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3925273 0.03930270 0.1744514 0.3452993 0.7708594</span></span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Mean     S.d.</span></span>
@@ -319,9 +736,15 @@ p(\sigma^2)\sim GIG(\lambda_\sigma,\delta_\sigma,\gamma_\sigma);\ \ p(\tau_s^2)\
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Interval</span></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Lower limit Upper limit </span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     0.00000    22.84662</span></span></code></pre></div>
-<p>The interval is added to the previous output, noting that the posterior quantiles required to produce the interval are obtained by simulation.</p>
-<p>The same procedures can be implemented also if the interest is in estimating a quantile <span class="math inline">\(\theta_p\)</span> under the log-normality assumption. For example, if the target is quantile <span class="math inline">\(p=0.95\)</span>, to find an optimal point estimate it is possible to use the following command.</p>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     0.00000    22.89927</span></span></code></pre></div>
+<p>The interval is added to the previous output, noting that the
+posterior quantiles required to produce the interval are obtained by
+simulation.</p>
+<p>The same procedures can be implemented also if the interest is in
+estimating a quantile <span class="math inline">\(\theta_p\)</span>
+under the log-normality assumption. For example, if the target is
+quantile <span class="math inline">\(p=0.95\)</span>, to find an optimal
+point estimate it is possible to use the following command.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">LN_Quant</span>(<span class="at">x =</span> EPA09, <span class="at">x_transf =</span> <span class="cn">FALSE</span>, <span class="at">quant =</span> <span class="fl">0.95</span>, <span class="at">method =</span> <span class="st">&quot;optimal&quot;</span>, <span class="at">CI =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The Bayes estimator under quadratic loss is employed</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Quantile</span></span>
@@ -333,19 +756,31 @@ p(\sigma^2)\sim GIG(\lambda_\sigma,\delta_\sigma,\gamma_\sigma);\ \ p(\tau_s^2)\
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; posterior   -3.5 0.686 13.036 2.509 4.652</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean        Var    p=0.05    p=0.50   p=0.95</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.03841293 2.1874892 2.5085773 2.829665</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3073035 0.01025415 0.1752031 0.2904762 0.496525</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean        Var    p=0.05    p=0.50    p=0.95</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.03841293 2.1874892 2.5085773 2.8296654</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3073035 0.01025415 0.1749379 0.2903484 0.4965604</span></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Mean    S.d.</span></span>
 <span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 31.18081 8.25687</span></span></code></pre></div>
-<p>The output is similar to the one printed for the mean <span class="math inline">\(\theta_m\)</span> and in this case the posterior mean and standard deviation of the desired quantile <span class="math inline">\(\theta_p\)</span> are reported. To compute an interval estimate, the function can be used as showed for <code>LN_Mean()</code>.</p>
+<p>The output is similar to the one printed for the mean <span class="math inline">\(\theta_m\)</span> and in this case the posterior
+mean and standard deviation of the desired quantile <span class="math inline">\(\theta_p\)</span> are reported. To compute an
+interval estimate, the function can be used as showed for
+<code>LN_Mean()</code>.</p>
 </div>
 <div id="log-normal-regression" class="section level3">
 <h3>Log-normal regression</h3>
-<p>The presented methods can be useful in predicting conditioned means under a log-normal linear model. The function <code>LN_MeanReg()</code> receives as input the vector <code>y</code> containing the observations of the response variable and the design matrix <code>X</code>. A matrix <code>Xtilde</code>, containing the covariate patterns for which a prediction is required, must be provided too. Likewise the unconditional estimation problem, it is possible to specify both an optimal prior setting and a weakly informative one.</p>
-<p>As illustrative example, the same data used in <span class="citation">Fabrizi and Trivisano (2016)</span> are considered, loading the <code>&quot;fatigue&quot;</code> dataset. Results for the weakly informative setting are reported.</p>
+<p>The presented methods can be useful in predicting conditioned means
+under a log-normal linear model. The function <code>LN_MeanReg()</code>
+receives as input the vector <code>y</code> containing the observations
+of the response variable and the design matrix <code>X</code>. A matrix
+<code>Xtilde</code>, containing the covariate patterns for which a
+prediction is required, must be provided too. Likewise the unconditional
+estimation problem, it is possible to specify both an optimal prior
+setting and a weakly informative one.</p>
+<p>As illustrative example, the same data used in <span class="citation">Fabrizi and Trivisano (2016)</span> are considered,
+loading the <code>&quot;fatigue&quot;</code> dataset. Results for the weakly
+informative setting are reported.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;fatigue&quot;</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -372,38 +807,65 @@ p(\sigma^2)\sim GIG(\lambda_\sigma,\delta_\sigma,\gamma_\sigma);\ \ p(\tau_s^2)\
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Sigma2</span></span>
 <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean        Var        q5       q50       q95</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3887769 0.01556038 0.2294396 0.3664266 0.6213329</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3887769 0.01556038 0.2289708 0.3670665 0.6212635</span></span>
 <span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Coefficients</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           Mean      S.d.         q2.5        q25       q50       q75     q97.5</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 254.44947 102.60879   51.9781220  187.17160 254.44301 321.79289 457.45924</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] -99.65571  44.01244 -186.8344568 -128.58818 -99.64253 -70.86925 -12.59535</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]  10.16026   4.73789    0.7891043    7.05553  10.16655  13.26216  19.52405</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           Mean     S.d.</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  11225.41  2233.33</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,]  55740.11 11089.67</span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] 114072.47 22695.08</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Interval</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            low        up</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  7568.137  16272.37</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] 37452.560  81219.99</span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] 76807.634 165354.60</span></span></code></pre></div>
-<p>For each one of the points for which a prediction is required, the summaries of the posterior distributions are reported: <code>$Sigma2</code> represents the variance in the log scale, whereas the <code>$Coefficients</code> reports the summaries of the vector of coefficients <span class="math inline">\(\boldsymbol{\beta}\)</span>.</p>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           Mean       S.d.         q2.5         q25       q50       q75</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 254.03494 102.425965   50.9141256  186.926241 254.03521 320.82618</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] -99.39110  44.176951 -186.1216168 -128.390838 -99.59992 -70.67147</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]  10.12643   4.717856    0.7996316    7.032247  10.13444  13.20417</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          q97.5</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 456.96485</span></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] -11.75460</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]  19.41055</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           Mean     S.d.</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  11225.41  2233.33</span></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,]  55740.11 11089.67</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] 114072.47 22695.08</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Interval</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            low        up</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  7546.526  16217.61</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] 37465.333  81033.31</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] 76964.412 166004.70</span></span></code></pre></div>
+<p>For each one of the points for which a prediction is required, the
+summaries of the posterior distributions are reported:
+<code>$Sigma2</code> represents the variance in the log scale, whereas
+the <code>$Coefficients</code> reports the summaries of the vector of
+coefficients <span class="math inline">\(\boldsymbol{\beta}\)</span>.</p>
 </div>
 <div id="random-coefficient-model" class="section level3">
 <h3>Random coefficient model</h3>
-<p>As last example, the estimation of log-normal linear mixed model is presented. The analysed dataset is due to <span class="citation">Gibson and Wu (2013)</span> and consists of a two-conditions repeated measure collection of observations of the time (in milliseconds) required to read the head noun of a Chinese clause. The following model is specified: <span class="math display">\[\begin{equation}
+<p>As last example, the estimation of log-normal linear mixed model is
+presented. The analysed dataset is due to <span class="citation">Gibson
+and Wu (2013)</span> and consists of a two-conditions repeated measure
+collection of observations of the time (in milliseconds) required to
+read the head noun of a Chinese clause. The following model is
+specified: <span class="math display">\[\begin{equation}
 w_{ijk}=\log(y_{ijk})=\beta_0+\beta_1 x_{i}+u_j+v_k+\varepsilon_{ijk},
-\end{equation}\]</span> where <span class="math inline">\(y_{ijk}\)</span> is the reading time observed for subject <span class="math inline">\(j=1,...,37\)</span>, reading item <span class="math inline">\(k=1,...,15\)</span> and condition <span class="math inline">\(i=1,2\)</span>. Moreover, it is fixed <span class="math inline">\(x_i=-1\)</span> in case of subject relative, and <span class="math inline">\(x_i=1\)</span> for object relative condition.</p>
-<p>The goal of the analysis is to predict the expectation conditioned on <span class="math inline">\(x_i\)</span> and marginalized with respect both the random effect: <span class="math display">\[\begin{equation}
-\theta_m(x_i=\pm 1)=\exp\left\{\beta_0\pm\beta_1+\frac{\tau^2_u+\tau^2_v+\sigma^2}{2} \right\}.
-\end{equation}\]</span> Moreover, the expectation specific of a particular subject and item might be of interest too: <span class="math display">\[\begin{equation}
-\theta_c(x_i,u_j,v_k)=\exp\left\{\beta_0+x_i\beta_1+u_j+v_k+\frac{\sigma^2}{2} \right\},
+\end{equation}\]</span> where <span class="math inline">\(y_{ijk}\)</span> is the reading time observed for
+subject <span class="math inline">\(j=1,...,37\)</span>, reading item
+<span class="math inline">\(k=1,...,15\)</span> and condition <span class="math inline">\(i=1,2\)</span>. Moreover, it is fixed <span class="math inline">\(x_i=-1\)</span> in case of subject relative, and
+<span class="math inline">\(x_i=1\)</span> for object relative
+condition.</p>
+<p>The goal of the analysis is to predict the expectation conditioned on
+<span class="math inline">\(x_i\)</span> and marginalized with respect
+both the random effect: <span class="math display">\[\begin{equation}
+\theta_m(x_i=\pm
+1)=\exp\left\{\beta_0\pm\beta_1+\frac{\tau^2_u+\tau^2_v+\sigma^2}{2}
+\right\}.
+\end{equation}\]</span> Moreover, the expectation specific of a
+particular subject and item might be of interest too: <span class="math display">\[\begin{equation}
+\theta_c(x_i,u_j,v_k)=\exp\left\{\beta_0+x_i\beta_1+u_j+v_k+\frac{\sigma^2}{2}
+\right\},
 \end{equation}\]</span></p>
-<p>As example, the prediction of these quantities for both the values of the covariate <span class="math inline">\(x_i\)</span> related to subject <span class="math inline">\(12\)</span> and item <span class="math inline">\(8\)</span> are desired. A new <code>data.frame</code> containing the desired covariate patterns must be created.</p>
+<p>As example, the prediction of these quantities for both the values of
+the covariate <span class="math inline">\(x_i\)</span> related to
+subject <span class="math inline">\(12\)</span> and item <span class="math inline">\(8\)</span> are desired. A new
+<code>data.frame</code> containing the desired covariate patterns must
+be created.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the dataset included in the package </span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;ReadingTime&quot;</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -425,65 +887,93 @@ w_{ijk}=\log(y_{ijk})=\beta_0+\beta_1 x_{i}+u_j+v_k+\varepsilon_{ijk},
 <span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:80.0%</span></span>
 <span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:90.0%</span></span>
 <span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:100.0%</span></span></code></pre></div>
-<p>As hinted before, the same priors for all the variance components are specified, choosing the most restrictive value for the parameter <span class="math inline">\(\gamma\)</span> (i.e. the highest one). To check the values, the element <code>$par_prior</code> of the output can be printed.</p>
+<p>As hinted before, the same priors for all the variance components are
+specified, choosing the most restrictive value for the parameter <span class="math inline">\(\gamma\)</span> (i.e. the highest one). To check
+the values, the element <code>$par_prior</code> of the output can be
+printed.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior parameters</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>par_prior</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       lambda delta    gamma</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2                     1  0.01 2.433771</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; tau2_subj.(Intercept)      1  0.01 2.433771</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; tau2_item.(Intercept)      1  0.01 2.433771</span></span></code></pre></div>
-<p>The <code>$samples</code> element is an object of class <code>mcmc</code> containing the samples drown from the posterior distributions of the model parameters and of the target functionals. The usual tools provided by the <code>coda</code> package <span class="citation">(Plummer et al. 2006)</span> can be used to explore them. For example, the chains convergence can be explored plotting the traceplots.</p>
+<p>The <code>$samples</code> element is an object of class
+<code>mcmc</code> containing the samples drown from the posterior
+distributions of the model parameters and of the target functionals. The
+usual tools provided by the <code>coda</code> package <span class="citation">(Plummer et al. 2006)</span> can be used to explore
+them. For example, the chains convergence can be explored plotting the
+traceplots.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># coda package</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Traceplots model parameters</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>oldpar <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">traceplot</span>(Mod_est_RT<span class="sc">$</span>samples<span class="sc">$</span>par[, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>])</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(oldpar)</span></code></pre></div>
-<p>Finally, the <code>$summaries</code> part contains the summary statistics of the posterior distributions of the parameters and the functionals required. It is possible to isolate the outputs related to the latter as follows.</p>
+<p>Finally, the <code>$summaries</code> part contains the summary
+statistics of the posterior distributions of the parameters and the
+functionals required. It is possible to isolate the outputs related to
+the latter as follows.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior summaries</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>summaries<span class="sc">$</span>marg</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Mean     SD Naive SE    2.5%     25%     50%     75%   97.5%</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 1 540.267 42.783    0.676 463.480 510.780 537.985 567.164 630.324</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 2 502.920 40.013    0.633 431.725 475.285 500.396 527.553 587.386</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 1 540.636 43.153    0.682 464.258 511.302 537.371 566.746 632.846</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 2 503.445 40.779    0.645 430.663 476.352 500.166 527.725 590.905</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               N_eff</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 1 1212.167</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 2 1193.424</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 1 1170.409</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 2 1183.756</span></span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>summaries<span class="sc">$</span>subj</span>
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            Mean      SD Naive SE     2.5%      25%      50%      75%    97.5%</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 1 1496.108 222.963    3.525 1108.800 1333.675 1479.610 1633.680 1976.768</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 2 1393.120 210.495    3.328 1025.859 1240.814 1377.267 1527.487 1851.056</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 1 1490.970 230.204    3.640 1096.553 1325.042 1470.963 1634.774 1986.574</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 2 1388.332 214.640    3.394 1019.792 1236.160 1370.063 1520.434 1859.318</span></span>
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           N_eff</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 1 3805.067</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 2 3805.030</span></span></code></pre></div>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 1 3765.216</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 2 4000.000</span></span></code></pre></div>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-lme" class="csl-entry">
-Bates, Douglas, Martin Mächler, Ben Bolker, and Steve Walker. 2015. <span>“Fitting Linear Mixed-Effects Models Using <span class="nocase">lme4</span>.”</span> <em>Journal of Statistical Software</em> 67 (1): 1–48. <a href="https://doi.org/10.18637/jss.v067.i01">https://doi.org/10.18637/jss.v067.i01</a>.
+Bates, Douglas, Martin Mächler, Ben Bolker, and Steve Walker. 2015.
+<span>“Fitting Linear Mixed-Effects Models Using <span class="nocase">lme4</span>.”</span> <em>Journal of Statistical
+Software</em> 67 (1): 1–48. <a href="https://doi.org/10.18637/jss.v067.i01">https://doi.org/10.18637/jss.v067.i01</a>.
 </div>
 <div id="ref-fabrizi2012bayes" class="csl-entry">
-Fabrizi, Enrico, and Carlo Trivisano. 2012. <span>“Bayesian Estimation of Log-Normal Means with Finite Quadratic Expected Loss.”</span> <em>Bayesian Analysis</em> 7 (4): 975–96.
+Fabrizi, Enrico, and Carlo Trivisano. 2012. <span>“Bayesian Estimation
+of Log-Normal Means with Finite Quadratic Expected Loss.”</span>
+<em>Bayesian Analysis</em> 7 (4): 975–96.
 </div>
 <div id="ref-fabrizi2016bayesian" class="csl-entry">
-———. 2016. <span>“Bayesian Conditional Mean Estimation in Log-Normal Linear Regression Models with Finite Quadratic Expected Loss.”</span> <em>Scandinavian Journal of Statistics</em> 43 (4): 1064–77.
+———. 2016. <span>“Bayesian Conditional Mean Estimation in Log-Normal
+Linear Regression Models with Finite Quadratic Expected Loss.”</span>
+<em>Scandinavian Journal of Statistics</em> 43 (4): 1064–77.
 </div>
 <div id="ref-gardini2020bayesian" class="csl-entry">
-Gardini, Aldo, Carlo Trivisano, and Enrico Fabrizi. 2020. <span>“Bayesian Inference for Quantiles of the Log-Normal Distribution.”</span> <em>Biometrical Journal</em>.
+Gardini, Aldo, Carlo Trivisano, and Enrico Fabrizi. 2020.
+<span>“Bayesian Inference for Quantiles of the Log-Normal
+Distribution.”</span> <em>Biometrical Journal</em>.
 </div>
 <div id="ref-gibson2013processing" class="csl-entry">
-Gibson, Edward, and H-H Iris Wu. 2013. <span>“Processing Chinese Relative Clauses in Context.”</span> <em>Language and Cognitive Processes</em> 28 (1-2): 125–55.
+Gibson, Edward, and H-H Iris Wu. 2013. <span>“Processing Chinese
+Relative Clauses in Context.”</span> <em>Language and Cognitive
+Processes</em> 28 (1-2): 125–55.
 </div>
 <div id="ref-coda" class="csl-entry">
-Plummer, Martyn, Nicky Best, Kate Cowles, and Karen Vines. 2006. <span>“CODA: Convergence Diagnosis and Output Analysis for MCMC.”</span> <em>R News</em> 6 (1): 7–11. <a href="https://journal.r-project.org/archive/">https://journal.r-project.org/archive/</a>.
+Plummer, Martyn, Nicky Best, Kate Cowles, and Karen Vines. 2006.
+<span>“CODA: Convergence Diagnosis and Output Analysis for MCMC.”</span>
+<em>R News</em> 6 (1): 7–11. <a href="https://journal.r-project.org/archive/">https://journal.r-project.org/archive/</a>.
 </div>
 <div id="ref-USEPA09" class="csl-entry">
-USEPA. 2009. <span>“Statistical Analysis of Groundwater Monitoring Data at RCRA Facilities: Unified Guidance.”</span> Office of Resource Conservation; Recovery, Program Implementation; Information Division, U.S. Environmental Protection Agency, Washington, D.C.
+USEPA. 2009. <span>“Statistical Analysis of Groundwater Monitoring Data
+at RCRA Facilities: Unified Guidance.”</span> Office of Resource
+Conservation; Recovery, Program Implementation; Information Division,
+U.S. Environmental Protection Agency, Washington, D.C.
 </div>
 <div id="ref-zellner1971bayesian" class="csl-entry">
-Zellner, Arnold. 1971. <span>“Bayesian and Non-Bayesian Analysis of the Log-Normal Distribution and Log-Normal Regression.”</span> <em>Journal of the American Statistical Association</em> 66 (334): 327–30.
+Zellner, Arnold. 1971. <span>“Bayesian and Non-Bayesian Analysis of the
+Log-Normal Distribution and Log-Normal Regression.”</span> <em>Journal
+of the American Statistical Association</em> 66 (334): 327–30.
 </div>
 </div>
 </div>
