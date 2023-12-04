@@ -1,6 +1,6 @@
 Package: BayesLN
 Title: Bayesian Inference for Log-Normal Data
-Version: 0.2.8
+Version: 0.2.10
 Authors@R: c(person("Aldo", "Gardini", email = "aldo.gardini2@unibo.it", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-2164-5815")), 
             person("Enrico", "Fabrizi", role = c("aut"), comment = c(ORCID = "0000-0003-2504-7043")), 
             person("Carlo", "Trivisano", role = c("aut"), comment = c(ORCID = "0000-0002-5991-4902")))
@@ -11,16 +11,16 @@ Imports: optimx, GeneralizedHyperbolic, gsl, coda, Rcpp (>= 0.12.17),
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 LinkingTo: Rcpp, RcppEigen
-Date: 2022-10-26
+Date: 2023-12-04
 NeedsCompilation: yes
-Packaged: 2022-10-26 07:26:09 UTC; Acer
+Packaged: 2023-12-04 14:55:50 UTC; aldo.gardini2
 Author: Aldo Gardini [aut, cre] (<https://orcid.org/0000-0002-2164-5815>),
   Enrico Fabrizi [aut] (<https://orcid.org/0000-0003-2504-7043>),
   Carlo Trivisano [aut] (<https://orcid.org/0000-0002-5991-4902>)
 Maintainer: Aldo Gardini <aldo.gardini2@unibo.it>
 Repository: CRAN
-Date/Publication: 2022-10-26 10:48:06 UTC
+Date/Publication: 2023-12-04 15:20:18 UTC

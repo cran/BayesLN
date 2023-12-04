@@ -12,7 +12,7 @@
 
 <meta name="author" content="Aldo Gardini, Carlo Trivisano and Enrico Fabrizi" />
 
-<meta name="date" content="2022-10-26" />
+<meta name="date" content="2023-12-04" />
 
 <title>Bayesian Inference with Log-normal Data</title>
 
@@ -31,23 +31,23 @@ document.addEventListener('DOMContentLoaded', function(e) {
 </script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -65,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -122,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -140,25 +146,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 <style type="text/css">
-/* for pandoc --citeproc since 2.11 */
+
 div.csl-bib-body { }
 div.csl-entry {
-  clear: both;
+clear: both;
 }
 .hanging div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
+margin-left:2em;
+text-indent:-2em;
 }
 div.csl-left-margin {
-  min-width:2em;
-  float:left;
+min-width:2em;
+float:left;
 }
 div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
+margin-left:2em;
+padding-left:1em;
 }
 div.csl-indent {
-  margin-left: 2em;
+margin-left: 2em;
 }
 </style>
 
@@ -357,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">Bayesian Inference with Log-normal
 Data</h1>
 <h4 class="author">Aldo Gardini, Carlo Trivisano and Enrico Fabrizi</h4>
-<h4 class="date">2022-10-26</h4>
+<h4 class="date">2023-12-04</h4>
 
 
 
@@ -673,27 +679,27 @@ vector of observations is already included in the package and is named
 advise is to use the <code>&quot;optimal&quot;</code> prior setting. Since the
 observations are not already log-transformed, the argument
 <code>x_transf</code> is set as <code>FALSE</code>.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load dataset</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;EPA09&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Bayes estimator under relative quadratic loss and optimal prior setting</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">LN_Mean</span>(<span class="at">x =</span> EPA09, <span class="at">x_transf =</span> <span class="cn">FALSE</span>, <span class="at">method =</span> <span class="st">&quot;optimal&quot;</span>, <span class="at">CI =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Prior_Parameters</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lambda  delta  gamma </span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.800  0.010  2.031 </span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Posterior_Parameters</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lambda  alpha  delta   beta     mu </span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -7.300  7.000  0.587  4.000  2.509 </span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean         Var    p=0.05    p=0.50    p=0.95</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.025427261 2.2479885 2.5085773 2.7691661</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.2034181 0.006442247 0.1087473 0.1865454 0.3545405</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Mean     S.d.</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 13.79142 2.352631</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Load dataset</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;EPA09&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Bayes estimator under relative quadratic loss and optimal prior setting</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">LN_Mean</span>(<span class="at">x =</span> EPA09, <span class="at">x_transf =</span> <span class="cn">FALSE</span>, <span class="at">method =</span> <span class="st">&quot;optimal&quot;</span>, <span class="at">CI =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; $Prior_Parameters</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; lambda  delta  gamma </span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; -3.800  0.010  2.031 </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; $Posterior_Parameters</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; lambda  alpha  delta   beta     mu </span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; -7.300  7.000  0.587  4.000  2.509 </span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt;             Mean         Var    p=0.05    p=0.50    p=0.95</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.025427261 2.2479885 2.5085773 2.7691661</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; sigma2 0.2034181 0.006442247 0.1088789 0.1865022 0.3542689</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt;          Mean     S.d.</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; [1,] 13.79142 2.352631</span></span></code></pre></div>
 <p>The output reports the prior parameters for the variance <span class="math inline">\(\sigma^2\sim GIG(\lambda, \delta, \gamma)\)</span>
 and the 5 parameters that characterize the posterior distribution of the
 log-normal mean <span class="math inline">\(\theta_m\)</span>, i.e. a
@@ -716,27 +722,27 @@ limit (<code>&quot;LCL&quot;</code>) and the upper credible limit
 environmental problems to estimate pollutants legal limits. For example,
 the <span class="math inline">\(95\%\)</span> UCL can be estimated as
 follows.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">LN_Mean</span>(<span class="at">x =</span> EPA09, <span class="at">x_transf =</span> <span class="cn">FALSE</span>, <span class="at">method =</span> <span class="st">&quot;weak_inf&quot;</span>, <span class="at">alpha_CI =</span> <span class="fl">0.05</span>, <span class="at">type_CI =</span> <span class="st">&quot;UCL&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Prior_Parameters</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lambda  delta  gamma </span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.000  0.010  2.031 </span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Posterior_Parameters</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lambda  alpha  delta   beta     mu </span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.500  7.000  0.587  4.000  2.509 </span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean        Var    p=0.05    p=0.50    p=0.95</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.04906591 2.1479285 2.5085773 2.8692261</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3925273 0.03930270 0.1744514 0.3452993 0.7708594</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Mean     S.d.</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 15.42667 4.241931</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Interval</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Lower limit Upper limit </span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     0.00000    22.89927</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">LN_Mean</span>(<span class="at">x =</span> EPA09, <span class="at">x_transf =</span> <span class="cn">FALSE</span>, <span class="at">method =</span> <span class="st">&quot;weak_inf&quot;</span>, <span class="at">alpha_CI =</span> <span class="fl">0.05</span>, <span class="at">type_CI =</span> <span class="st">&quot;UCL&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; $Prior_Parameters</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; lambda  delta  gamma </span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;  0.000  0.010  2.031 </span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; $Posterior_Parameters</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; lambda  alpha  delta   beta     mu </span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; -3.500  7.000  0.587  4.000  2.509 </span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;             Mean        Var    p=0.05    p=0.50    p=0.95</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.04906591 2.1479285 2.5085773 2.8692261</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3925273 0.03930270 0.1748106 0.3462637 0.7712068</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt;          Mean     S.d.</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; [1,] 15.42667 4.241931</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; $Interval</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; Lower limit Upper limit </span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt;      0.0000     22.9175</span></span></code></pre></div>
 <p>The interval is added to the previous output, noting that the
 posterior quantiles required to produce the interval are obtained by
 simulation.</p>
@@ -745,24 +751,24 @@ estimating a quantile <span class="math inline">\(\theta_p\)</span>
 under the log-normality assumption. For example, if the target is
 quantile <span class="math inline">\(p=0.95\)</span>, to find an optimal
 point estimate it is possible to use the following command.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">LN_Quant</span>(<span class="at">x =</span> EPA09, <span class="at">x_transf =</span> <span class="cn">FALSE</span>, <span class="at">quant =</span> <span class="fl">0.95</span>, <span class="at">method =</span> <span class="st">&quot;optimal&quot;</span>, <span class="at">CI =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The Bayes estimator under quadratic loss is employed</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Quantile</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.95</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Parameters</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           lambda delta  gamma    mu  beta</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; prior        0.0 1.000  4.609    NA    NA</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; posterior   -3.5 0.686 13.036 2.509 4.652</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean        Var    p=0.05    p=0.50    p=0.95</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.03841293 2.1874892 2.5085773 2.8296654</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3073035 0.01025415 0.1749379 0.2903484 0.4965604</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          Mean    S.d.</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 31.18081 8.25687</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">LN_Quant</span>(<span class="at">x =</span> EPA09, <span class="at">x_transf =</span> <span class="cn">FALSE</span>, <span class="at">quant =</span> <span class="fl">0.95</span>, <span class="at">method =</span> <span class="st">&quot;optimal&quot;</span>, <span class="at">CI =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; The Bayes estimator under quadratic loss is employed</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; $Quantile</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; [1] 0.95</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; $Parameters</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt;           lambda delta  gamma    mu  beta</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; prior        0.0 1.000  4.609    NA    NA</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; posterior   -3.5 0.686 13.036 2.509 4.652</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; $LogN_Par_Post</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt;             Mean        Var    p=0.05    p=0.50    p=0.95</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; xi     2.5085773 0.03841293 2.1874892 2.5085773 2.8296654</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3073035 0.01025415 0.1750871 0.2903003 0.4961176</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt;          Mean    S.d.</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; [1,] 31.18081 8.25687</span></span></code></pre></div>
 <p>The output is similar to the one printed for the mean <span class="math inline">\(\theta_m\)</span> and in this case the posterior
 mean and standard deviation of the desired quantile <span class="math inline">\(\theta_p\)</span> are reported. To compute an
 interval estimate, the function can be used as showed for
@@ -781,55 +787,51 @@ setting and a weakly informative one.</p>
 <p>As illustrative example, the same data used in <span class="citation">Fabrizi and Trivisano (2016)</span> are considered,
 loading the <code>&quot;fatigue&quot;</code> dataset. Results for the weakly
 informative setting are reported.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;fatigue&quot;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Design matrices</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>Xtot <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, <span class="fu">log</span>(fatigue<span class="sc">$</span>stress), <span class="fu">log</span>(fatigue<span class="sc">$</span>stress)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> Xtot[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">13</span>,<span class="dv">22</span>),]</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> fatigue<span class="sc">$</span>cycle[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">13</span>,<span class="dv">22</span>)]</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>Xtilde <span class="ot">&lt;-</span> Xtot[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">13</span>,<span class="dv">22</span>),] <span class="co"># units to predict</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#Estimation</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="fu">LN_MeanReg</span>(<span class="at">y =</span> y,</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">X =</span> X, <span class="at">Xtilde =</span> Xtilde,</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">&quot;weak_inf&quot;</span>, <span class="at">y_transf =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Prior_Parameters</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lambda  delta  gamma </span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.000  0.010  2.823 </span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Posterior_Parameters</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      lambda  alpha delta  beta     mu</span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]     -8 19.573 1.034 3.167  9.188</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,]     -8 19.573 1.034 3.167 10.791</span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]     -8 19.573 1.034 3.167 11.507</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Sigma2</span></span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Mean        Var        q5       q50       q95</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3887769 0.01556038 0.2289708 0.3670665 0.6212635</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Coefficients</span></span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           Mean       S.d.         q2.5         q25       q50       q75</span></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 254.03494 102.425965   50.9141256  186.926241 254.03521 320.82618</span></span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] -99.39110  44.176951 -186.1216168 -128.390838 -99.59992 -70.67147</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]  10.12643   4.717856    0.7996316    7.032247  10.13444  13.20417</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          q97.5</span></span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 456.96485</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] -11.75460</span></span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,]  19.41055</span></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           Mean     S.d.</span></span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  11225.41  2233.33</span></span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,]  55740.11 11089.67</span></span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] 114072.47 22695.08</span></span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $Interval</span></span>
-<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            low        up</span></span>
-<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,]  7546.526  16217.61</span></span>
-<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2,] 37465.333  81033.31</span></span>
-<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [3,] 76964.412 166004.70</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;fatigue&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Design matrices</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>Xtot <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, <span class="fu">log</span>(fatigue<span class="sc">$</span>stress), <span class="fu">log</span>(fatigue<span class="sc">$</span>stress)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>X <span class="ot">&lt;-</span> Xtot[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">13</span>,<span class="dv">22</span>),]</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>y <span class="ot">&lt;-</span> fatigue<span class="sc">$</span>cycle[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">13</span>,<span class="dv">22</span>)]</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>Xtilde <span class="ot">&lt;-</span> Xtot[<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">13</span>,<span class="dv">22</span>),] <span class="co"># units to predict</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#Estimation</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="fu">LN_MeanReg</span>(<span class="at">y =</span> y,</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>           <span class="at">X =</span> X, <span class="at">Xtilde =</span> Xtilde,</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">&quot;weak_inf&quot;</span>, <span class="at">y_transf =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; $Prior_Parameters</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; lambda  delta  gamma </span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt;  0.000  0.010  2.823 </span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co">#&gt; $Posterior_Parameters</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a><span class="co">#&gt;      lambda  alpha delta  beta     mu</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a><span class="co">#&gt; [1,]     -8 19.573 1.034 3.167  9.188</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a><span class="co">#&gt; [2,]     -8 19.573 1.034 3.167 10.791</span></span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a><span class="co">#&gt; [3,]     -8 19.573 1.034 3.167 11.507</span></span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a><span class="co">#&gt; $Sigma2</span></span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt;             Mean        Var       q5       q50       q95</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; sigma2 0.3887769 0.01556038 0.229139 0.3668367 0.6229102</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; $Coefficients</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt;           Mean     S.d.         q2.5         q25       q50       q75     q97.5</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; [1,] 254.18651 102.7014   51.4762078  186.910185 253.67342 321.55286 457.72000</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; [2,] -99.55638  44.0258 -186.6546203 -128.438923 -99.77860 -70.86023 -11.99868</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; [3,]  10.12994   4.7291    0.8160653    7.015753  10.11528  13.23341  19.48882</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt; $Post_Estimates</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt;           Mean     S.d.</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; [1,]  11225.41  2233.33</span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; [2,]  55740.11 11089.67</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; [3,] 114072.47 22695.08</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; $Interval</span></span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a><span class="co">#&gt;           low        up</span></span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a><span class="co">#&gt; [1,]  7577.57  16339.36</span></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a><span class="co">#&gt; [2,] 37569.54  80715.74</span></span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a><span class="co">#&gt; [3,] 76890.90 165529.44</span></span></code></pre></div>
 <p>For each one of the points for which a prediction is required, the
 summaries of the posterior distributions are reported:
 <code>$Sigma2</code> represents the variance in the log scale, whereas
@@ -866,69 +868,69 @@ the covariate <span class="math inline">\(x_i\)</span> related to
 subject <span class="math inline">\(12\)</span> and item <span class="math inline">\(8\)</span> are desired. A new
 <code>data.frame</code> containing the desired covariate patterns must
 be created.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the dataset included in the package </span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;ReadingTime&quot;</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define data.frame containing the covariate patterns to investigate</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>data_pred_new <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">so=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>), <span class="at">subj=</span><span class="fu">factor</span>(<span class="dv">12</span>), <span class="at">item=</span><span class="fu">factor</span>(<span class="dv">8</span>))</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Model estimation </span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>Mod_est_RT <span class="ot">&lt;-</span> <span class="fu">LN_hierarchical</span>(<span class="at">formula_lme =</span> log_rt <span class="sc">~</span> so <span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>subj)<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>item), </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                              <span class="at">data_lme =</span> ReadingTime, <span class="at">data_pred =</span> data_pred_new, </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                              <span class="at">functional =</span> <span class="fu">c</span>(<span class="st">&quot;Marginal&quot;</span>, <span class="st">&quot;Subject&quot;</span>), </span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                              <span class="at">nsamp =</span> <span class="dv">25000</span>, <span class="at">burnin =</span> <span class="dv">5000</span>, <span class="at">n_thin =</span> <span class="dv">5</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:10.0%</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:20.0%</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:30.0%</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:40.0%</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:50.0%</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:60.0%</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:70.0%</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:80.0%</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:90.0%</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ----------:100.0%</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Load the dataset included in the package </span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;ReadingTime&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Define data.frame containing the covariate patterns to investigate</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>data_pred_new <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">so=</span><span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>), <span class="at">subj=</span><span class="fu">factor</span>(<span class="dv">12</span>), <span class="at">item=</span><span class="fu">factor</span>(<span class="dv">8</span>))</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co"># Model estimation </span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>Mod_est_RT <span class="ot">&lt;-</span> <span class="fu">LN_hierarchical</span>(<span class="at">formula_lme =</span> log_rt <span class="sc">~</span> so <span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>subj)<span class="sc">+</span>(<span class="dv">1</span><span class="sc">|</span>item), </span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>                              <span class="at">data_lme =</span> ReadingTime, <span class="at">data_pred =</span> data_pred_new, </span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>                              <span class="at">functional =</span> <span class="fu">c</span>(<span class="st">&quot;Marginal&quot;</span>, <span class="st">&quot;Subject&quot;</span>), </span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>                              <span class="at">nsamp =</span> <span class="dv">25000</span>, <span class="at">burnin =</span> <span class="dv">5000</span>, <span class="at">n_thin =</span> <span class="dv">5</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; ----------:10.0</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; ----------:20.0</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; ----------:30.0</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; ----------:40.0</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; ----------:50.0</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; ----------:60.0</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; ----------:70.0</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; ----------:80.0</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; ----------:90.0</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; ----------:100.0</span></span></code></pre></div>
 <p>As hinted before, the same priors for all the variance components are
 specified, choosing the most restrictive value for the parameter <span class="math inline">\(\gamma\)</span> (i.e. the highest one). To check
 the values, the element <code>$par_prior</code> of the output can be
 printed.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prior parameters</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>par_prior</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       lambda delta    gamma</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma2                     1  0.01 2.433771</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; tau2_subj.(Intercept)      1  0.01 2.433771</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; tau2_item.(Intercept)      1  0.01 2.433771</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Prior parameters</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>par_prior</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;                       lambda delta    gamma</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; sigma2                     1  0.01 2.433771</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; tau2_subj.(Intercept)      1  0.01 2.433771</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; tau2_item.(Intercept)      1  0.01 2.433771</span></span></code></pre></div>
 <p>The <code>$samples</code> element is an object of class
 <code>mcmc</code> containing the samples drown from the posterior
 distributions of the model parameters and of the target functionals. The
 usual tools provided by the <code>coda</code> package <span class="citation">(Plummer et al. 2006)</span> can be used to explore
 them. For example, the chains convergence can be explored plotting the
 traceplots.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># coda package</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Traceplots model parameters</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>oldpar <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">traceplot</span>(Mod_est_RT<span class="sc">$</span>samples<span class="sc">$</span>par[, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>])</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(oldpar)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># coda package</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">library</span>(coda)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co"># Traceplots model parameters</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>oldpar <span class="ot">&lt;-</span> <span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>))</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="fu">traceplot</span>(Mod_est_RT<span class="sc">$</span>samples<span class="sc">$</span>par[, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>])</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">par</span>(oldpar)</span></code></pre></div>
 <p>Finally, the <code>$summaries</code> part contains the summary
 statistics of the posterior distributions of the parameters and the
 functionals required. It is possible to isolate the outputs related to
 the latter as follows.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Posterior summaries</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>summaries<span class="sc">$</span>marg</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Mean     SD Naive SE    2.5%     25%     50%     75%   97.5%</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 1 540.636 43.153    0.682 464.258 511.302 537.371 566.746 632.846</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 2 503.445 40.779    0.645 430.663 476.352 500.166 527.725 590.905</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               N_eff</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 1 1170.409</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Marginal 2 1183.756</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>summaries<span class="sc">$</span>subj</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;            Mean      SD Naive SE     2.5%      25%      50%      75%    97.5%</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 1 1490.970 230.204    3.640 1096.553 1325.042 1470.963 1634.774 1986.574</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 2 1388.332 214.640    3.394 1019.792 1236.160 1370.063 1520.434 1859.318</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           N_eff</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 1 3765.216</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Subj 2 4000.000</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Posterior summaries</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>summaries<span class="sc">$</span>marg</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt;               Mean     SD Naive SE    2.5%     25%     50%     75%   97.5%</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; Marginal 1 541.830 43.121    0.682 465.033 512.820 539.320 567.982 632.149</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; Marginal 2 504.295 40.242    0.636 432.134 477.225 501.332 528.268 595.054</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;               N_eff</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; Marginal 1 1412.456</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; Marginal 2 1338.485</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>Mod_est_RT<span class="sc">$</span>summaries<span class="sc">$</span>subj</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt;            Mean      SD Naive SE     2.5%      25%      50%      75%    97.5%</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; Subj 1 1490.443 224.957    3.557 1084.054 1335.929 1471.903 1630.183 1972.834</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Subj 2 1387.360 210.751    3.332 1012.509 1240.606 1367.927 1518.081 1845.367</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;           N_eff</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; Subj 1 4274.405</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; Subj 2 4262.111</span></span></code></pre></div>
 </div>
 </div>
 <div id="references" class="section level2 unnumbered">

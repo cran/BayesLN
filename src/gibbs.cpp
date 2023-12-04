@@ -183,7 +183,7 @@ Rcpp::List MCMC_alg(const Eigen::VectorXd y,
       R_FlushConsole();
       //R_ProcessEvents(); for windows
       if(((k+1)%(nsamp/10))==0){
-        Rprintf(":%.1f%%\n",Perc);
+        Rprintf(":%.1f\n",Perc);
         R_FlushConsole();
         //R_ProcessEvents(); for windows
       }
